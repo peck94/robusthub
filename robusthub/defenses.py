@@ -7,7 +7,9 @@ Catalog of adversarial defenses.
 
 import robusthub
 
-class Defense:
+from abc import ABC, abstractmethod
+
+class Defense(ABC):
     """
     Abstract base class for all adversarial defenses.
     """
@@ -18,6 +20,7 @@ class Defense:
         """
         pass
 
+    @abstractmethod
     def apply(self, model: robusthub.models.Model) -> robusthub.models.Model:
         """
         Apply the defense to a given model.

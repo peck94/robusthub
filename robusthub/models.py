@@ -9,9 +9,11 @@ import torch
 
 import numpy as np
 
+from abc import ABC, abstractmethod
+
 type Array = list | np.ndarray | torch.Tensor
 
-class Model:
+class Model(ABC):
     """
     Abstract base class for all models.
     """
@@ -21,6 +23,7 @@ class Model:
         """
         pass
 
+    @abstractmethod
     def predict(self, x_data: Array) -> Array:
         """
         Query the model on a batch of samples.
