@@ -60,7 +60,7 @@ def load(repo: str, ident: str, source: str = 'github', force_reload: bool = Fal
     Parameters
     -----------
     repo
-        The repository identifier.
+        The repository identifier. If `source` is `local`, this is the path to the local directory where the `robusthubconf.py` file can be found.
 
     ident
         The defense identifier.
