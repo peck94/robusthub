@@ -1,5 +1,5 @@
 """
-Catalog of adversarial defenses.
+Catalog of adversarial defenses and facilities for loading external defenses.
 """
 import torch
 
