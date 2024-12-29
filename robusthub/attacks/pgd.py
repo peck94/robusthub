@@ -1,9 +1,9 @@
 from robusthub.base import Array
 from robusthub.attacks.attack import Attack
 
-class FastGradientSignMethod(Attack):
+class ProjectedGradientDescent(Attack):
     """
-    The fast gradient sign attack.
+    The projected gradient descent attack.
     """
     def __init__(self, model):
         super().__init__(model)
