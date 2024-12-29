@@ -71,7 +71,7 @@ def load(repo: str, ident: str, source: str = 'github', force_reload: bool = Fal
     force_reload
         Force reloading of the module.
 
-    **kwargs
+    kwargs
         Optional keyword arguments for the defense.
     
     Returns

@@ -19,7 +19,7 @@ def load(repo: str, ident: str, **kwargs) -> Model:
     ident
         The model identifier.
 
-    **kwargs
+    kwargs
         Optional keyword arguments for `torch.hub.load`.
     
     Returns
