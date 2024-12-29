@@ -1,5 +1,5 @@
 """
-models
+Models
 =======
 
 Facilities for loading models.
@@ -7,11 +7,9 @@ Facilities for loading models.
 
 import torch
 
-import numpy as np
+from robusthub.base import Array
 
 from abc import ABC, abstractmethod
-
-type Array = list | np.ndarray | torch.Tensor
 
 class Model(ABC):
     """
