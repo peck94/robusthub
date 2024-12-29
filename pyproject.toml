@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "RobustHub"
+authors = [
+    {name = "Jonathan Peck", email = "Jonathan.Peck@UGent.be"}
+]
+description = ""
+readme = "README.md"
+requires-python = ">=3.9"
+version = "0.0.1"
+dependencies = [
+    "torch",
+    "torchvision",
+    "torchaudio"
+]
