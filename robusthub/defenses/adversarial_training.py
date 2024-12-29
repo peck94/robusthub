@@ -12,7 +12,7 @@ import numpy as np
 from robusthub.threats import ThreatModel
 from robusthub.models import Model
 from robusthub.defenses import Defense
-from robusthub.attacks import FastGradientSignMethod
+from robusthub.attacks import ProjectedGradientDescent
 
 from tqdm import tqdm
 
@@ -71,7 +71,7 @@ class AdversarialTraining(Defense):
         """
         optimizer = torch.optim.Adam(model.parameters())
         criterion = torch.nn.CrossEntropyLoss()
-        attack = FastGradientSignMethod(model, self.threat)
+        attack = ProjectedGradientDescent(model, self.threat)
         for epoch in range(self.nb_epochs):
             losses = []
             progbar = tqdm(self.training_data, desc=f'Epoch {epoch + 1} / {self.nb_epochs}')
