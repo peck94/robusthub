@@ -5,7 +5,8 @@ Adversarial training
 Catalog of adversarial training defenses.
 """
 
-from robusthub.defenses.defense import Defense
+from robusthub.models import Model
+from robusthub.defenses import Defense
 
 class AdversarialTraining(Defense):
     """
@@ -14,3 +15,6 @@ class AdversarialTraining(Defense):
 
     def __init__(self):
         pass
+
+    def apply(self, model: Model) -> Model:
+        return model

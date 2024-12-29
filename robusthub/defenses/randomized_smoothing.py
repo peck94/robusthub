@@ -5,6 +5,7 @@ Randomized smoothing
 Catalog of randomized smoothing defenses.
 """
 
+from robusthub.models import Model
 from robusthub.defenses.defense import Defense
 
 class RandomizedSmoothing(Defense):
@@ -15,6 +16,9 @@ class RandomizedSmoothing(Defense):
     def __init__(self):
         pass
 
+    def apply(self, model: Model) -> Model:
+        return model
+
 
 class DenoisedSmoothing(RandomizedSmoothing):
     """
@@ -23,3 +27,6 @@ class DenoisedSmoothing(RandomizedSmoothing):
 
     def __init__(self):
         pass
+
+    def apply(self, model: Model) -> Model:
+        return model
