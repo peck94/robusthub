@@ -36,9 +36,6 @@ class AdversarialTraining(Defense):
     
     nb_iterations
         Number of PGD iterations.
-    
-    epsilon
-        Perturbation budget.
 
     device
         PyTorch device.
