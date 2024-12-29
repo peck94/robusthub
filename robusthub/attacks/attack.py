@@ -1,7 +1,4 @@
 """
-Attacks
-========
-
 Catalog of adversarial attacks.
 """
 

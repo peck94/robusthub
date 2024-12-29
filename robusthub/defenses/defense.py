@@ -1,11 +1,9 @@
 """
-Defenses
-=========
-
 Catalog of adversarial defenses.
 """
 
 import robusthub
+from robusthub.models import Model
 
 from abc import ABC, abstractmethod
 
@@ -21,7 +19,7 @@ class Defense(ABC):
         pass
 
     @abstractmethod
-    def apply(self, model: robusthub.models.Model) -> robusthub.models.Model:
+    def apply(self, model: Model) -> Model:
         """
         Apply the defense to a given model.
 

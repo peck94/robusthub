@@ -1,7 +1,4 @@
 """
-Models
-=======
-
 Facilities for loading models.
 """
 
