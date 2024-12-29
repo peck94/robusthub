@@ -7,7 +7,7 @@ from robusthub.attacks.attack import Attack
 
 class ProjectedGradientDescent(Attack):
     """
-    The projected gradient descent attack.
+    The projected gradient descent attack popularized by :cite:`madry2017attack`.
     """
     def __init__(self,
                  model: Model,

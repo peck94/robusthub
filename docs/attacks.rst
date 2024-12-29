@@ -9,3 +9,8 @@ Attacks
 
 .. automodule:: robusthub.attacks.pgd
    :members:
+
+References
+-----------
+
+.. bibliography:: attacks.bib

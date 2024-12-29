@@ -9,3 +9,8 @@ Defenses
 
 .. automodule:: robusthub.defenses.randomized_smoothing
    :members:
+
+References
+-----------
+
+.. bibliography:: defenses.bib

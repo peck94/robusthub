@@ -10,7 +10,7 @@ from robusthub.defenses.defense import Defense
 
 class RandomizedSmoothing(Defense):
     """
-    Basic randomized smoothing implementation.
+    Basic randomized smoothing implementation based on :cite:`cohen2019certified`.
     """
 
     def __init__(self):
@@ -22,7 +22,7 @@ class RandomizedSmoothing(Defense):
 
 class DenoisedSmoothing(RandomizedSmoothing):
     """
-    Basic denoised smoothing implementation.
+    Basic denoised smoothing implementation proposed by :cite:`salman2020denoised`.
     """
 
     def __init__(self):

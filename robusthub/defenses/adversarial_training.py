@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 class AdversarialTraining(Defense):
     """
-    Basic adversarial training defense. It uses the :py:class:`robusthub.attacks.pgd.ProjectedGradientDescent` attack.
+    Basic adversarial training defense as proposed by :cite:`madry2017defense`. It uses the :py:class:`robusthub.attacks.pgd.ProjectedGradientDescent` attack.
 
     Parameters
     -----------
