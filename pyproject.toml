@@ -16,7 +16,8 @@ dependencies = [
     "torchvision",
     "torchaudio",
     "sphinx",
-    "pytest"
+    "pytest",
+    "tqdm"
 ]
 
 [tool.pytest.ini_options]
