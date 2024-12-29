@@ -9,6 +9,7 @@ import torch
 
 import numpy as np
 
+from robusthub.threats import ThreatModel
 from robusthub.models import Model
 from robusthub.defenses import Defense
 from robusthub.attacks import FastGradientSignMethod
@@ -27,6 +28,9 @@ class AdversarialTraining(Defense):
     validation_data
         Clean validation data.
     
+    threat_model
+        Threat model of the attacks.
+    
     nb_epochs
         Number of training epochs.
     
@@ -40,15 +44,15 @@ class AdversarialTraining(Defense):
     def __init__(self,
                  training_data: torch.utils.data.DataLoader,
                  validation_data: torch.utils.data.DataLoader,
+                 threat_model: ThreatModel,
                  nb_epochs: int = 100,
-                 epsilon: float = .06,
                  device: torch.device = torch.device('cuda')):
         super().__init__()
 
         self.training_data = training_data
         self.validation_data = validation_data
         self.nb_epochs = nb_epochs
-        self.epsilon = epsilon
+        self.threat = threat_model
         self.device = device
 
     def apply(self, model: Model) -> Model:
@@ -67,7 +71,7 @@ class AdversarialTraining(Defense):
         """
         optimizer = torch.optim.Adam(model.parameters())
         criterion = torch.nn.CrossEntropyLoss()
-        attack = FastGradientSignMethod(model, self.epsilon)
+        attack = FastGradientSignMethod(model, self.threat)
         for epoch in range(self.nb_epochs):
             losses = []
             progbar = tqdm(self.training_data, desc=f'Epoch {epoch + 1} / {self.nb_epochs}')

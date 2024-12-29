@@ -6,6 +6,7 @@ import torch
 from abc import ABC, abstractmethod
 
 from robusthub.models import Model
+from robusthub.threats import ThreatModel
 
 class Attack(ABC):
     """
@@ -15,9 +16,13 @@ class Attack(ABC):
     -----------
     model
         The model to attack.
+    
+    threat_model
+        The threat model of the attack.
     """
-    def __init__(self, model: Model):
+    def __init__(self, model: Model, threat_model: ThreatModel):
         self.model = model
+        self.threat = threat_model
 
     @abstractmethod
     def apply(self, x_data: torch.Tensor, y_data: torch.Tensor | None) -> torch.Tensor:
