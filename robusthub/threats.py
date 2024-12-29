@@ -58,7 +58,7 @@ class Lp(ThreatModel):
         deltas = (x_tilde - x_orig).view(x_orig.shape[0], -1)
         norms = torch.linalg.vector_norm(deltas, self.p, dim=1, keepdim=True)
 
-        x_proj = x_orig + torch.where(norms > self.epsilon, deltas / norms, deltas).view(x_orig.shape)
+        x_proj = x_orig + torch.where(norms > self.epsilon, self.epsilon * deltas / norms, deltas).view(x_orig.shape)
         return x_proj
 
 class Linf(Lp):
