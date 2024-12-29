@@ -1,5 +1,5 @@
 """
-defenses
+Defenses
 =========
 
 Catalog of adversarial defenses.
