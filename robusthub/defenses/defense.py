@@ -13,9 +13,6 @@ class Defense(ABC):
     """
 
     def __init__(self):
-        """
-        Initialize the defense.
-        """
         pass
 
     @abstractmethod

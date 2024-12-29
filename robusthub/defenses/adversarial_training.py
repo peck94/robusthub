@@ -18,6 +18,23 @@ from tqdm import tqdm
 class AdversarialTraining(Defense):
     """
     Basic adversarial training defense. It uses the :py:class:`robusthub.attacks.pgd.ProjectedGradientDescent` attack.
+
+    Parameters
+    -----------
+    training_data
+        Clean training data.
+    
+    validation_data
+        Clean validation data.
+    
+    nb_epochs
+        Number of training epochs.
+    
+    epsilon
+        Perturbation budget.
+
+    device
+        PyTorch device.
     """
 
     def __init__(self,
@@ -26,26 +43,6 @@ class AdversarialTraining(Defense):
                  nb_epochs: int = 100,
                  epsilon: float = .06,
                  device: torch.device = torch.device('cuda')):
-        """
-        Initialize the defense.
-
-        Parameters
-        -----------
-        training_data
-            Clean training data.
-        
-        validation_data
-            Clean validation data.
-        
-        nb_epochs
-            Number of training epochs.
-        
-        epsilon
-            Perturbation budget.
-
-        device
-            PyTorch device.
-        """
         super().__init__()
 
         self.training_data = training_data

@@ -1,4 +1,5 @@
-from robusthub.base import Array
+import torch
+
 from robusthub.attacks.attack import Attack
 
 class ProjectedGradientDescent(Attack):
@@ -8,5 +9,5 @@ class ProjectedGradientDescent(Attack):
     def __init__(self, model):
         super().__init__(model)
     
-    def apply(self, x_data: Array, y_data: Array | None) -> Array:
+    def apply(self, x_data: torch.Tensor, y_data: torch.Tensor | None) -> torch.Tensor:
         return x_data

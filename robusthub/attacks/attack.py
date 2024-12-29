@@ -1,43 +1,40 @@
 """
 Catalog of adversarial attacks.
 """
+import torch
 
 from abc import ABC, abstractmethod
 
-from robusthub.base import Array
 from robusthub.models import Model
 
 class Attack(ABC):
     """
     Abstract base class for all adversarial attacks.
+
+    Parameters
+    -----------
+    model
+        The model to attack.
     """
     def __init__(self, model: Model):
-        """
-        Initialize the attack.
-
-        Parameters
-        -----------
-        model
-            The model to attack.
-        """
         self.model = model
 
     @abstractmethod
-    def apply(self, x_data: Array, y_data: Array | None) -> Array:
+    def apply(self, x_data: torch.Tensor, y_data: torch.Tensor | None) -> torch.Tensor:
         """
         Apply the attack to a batch of samples.
 
         Parameters
         -----------
         x_data
-            Array of input data samples.
+            Tensor of input data samples.
         
         y_data
-            Array of targets (optional).
+            Tensor of targets (optional).
         
         Returns
         --------
-        Array
-            Array of corrupted data samples.
+        torch.Tensor
+            Tensor of corrupted data samples.
         """
         pass
