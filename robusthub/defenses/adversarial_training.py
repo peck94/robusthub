@@ -34,6 +34,9 @@ class AdversarialTraining(Defense):
     nb_epochs
         Number of training epochs.
     
+    nb_iterations
+        Number of PGD iterations.
+    
     epsilon
         Perturbation budget.
 
@@ -46,12 +49,14 @@ class AdversarialTraining(Defense):
                  validation_data: torch.utils.data.DataLoader,
                  threat_model: ThreatModel,
                  nb_epochs: int = 100,
+                 nb_iterations: int = 100,
                  device: torch.device = torch.device('cuda')):
         super().__init__()
 
         self.training_data = training_data
         self.validation_data = validation_data
         self.nb_epochs = nb_epochs
+        self.nb_iterations = nb_iterations
         self.threat = threat_model
         self.device = device
 
@@ -71,7 +76,7 @@ class AdversarialTraining(Defense):
         """
         optimizer = torch.optim.Adam(model.parameters())
         criterion = torch.nn.CrossEntropyLoss()
-        attack = ProjectedGradientDescent(model, self.threat)
+        attack = ProjectedGradientDescent(model, self.threat, self.nb_iterations, self.device)
         for epoch in range(self.nb_epochs):
             losses = []
             progbar = tqdm(self.training_data, desc=f'Epoch {epoch + 1} / {self.nb_epochs}')
