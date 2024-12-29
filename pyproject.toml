@@ -15,5 +15,11 @@ dependencies = [
     "torch",
     "torchvision",
     "torchaudio",
-    "sphinx"
+    "sphinx",
+    "pytest"
+]
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests"
 ]
