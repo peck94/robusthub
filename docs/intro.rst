@@ -25,22 +25,22 @@ This example demonstrates how to apply a simple adversarial training defense. We
 
 .. code-block:: python
 
-    from robusthub.models import load
-    from robusthub.threats import Linf
-    from robusthub.defenses import AdversarialTraining
+    from robusthub import models, defenses, threats
 
     # Load CIFAR-10
 
     # ... snip ...
     
     # The model can be loaded from PyTorch Hub
-    model = load('pytorch/vision', 'resnet18')
+    model = models.load('pytorch/vision', 'resnet18')
 
     # The threat model is Linfty at eps = 0.03
-    threat_model = Linf(.03)
+    threat_model = threats.Composite([
+        threats.Linf(.03),
+        threats.Bounds(0, 1)])
 
     # Initialize the defense
-    defense = AdversarialTraining(train_loader, val_loader, threat_model)
+    defense = defenses.AdversarialTraining(train_loader, val_loader, threat_model)
 
     # Adversarially training the model returns a robust model
     robust_model = defense.apply(model)
@@ -53,9 +53,7 @@ One of the most important features of RobustHub is the ability to easily load ex
 
 .. code-block:: python
 
-    from robusthub.models import load as load_model
-    from robusthub.threats import Linf
-    from robusthub.defenses import load as load_defense
+    from robusthub import models, defenses, threats
 
     # Load CIFAR-10
 
@@ -65,10 +63,12 @@ One of the most important features of RobustHub is the ability to easily load ex
     model = load_model('pytorch/vision', 'resnet18')
 
     # The threat model is Linfty at eps = 0.03
-    threat_model = Linf(.03)
+    threat_model = threats.Composite([
+        threats.Linf(.03),
+        threats.Bounds(0, 1)])
 
     # Load the defense from GitHub
-    defense = load_defense('peck94/robusthub', 'adversarial_training',
+    defense = defenses.load('peck94/robusthub', 'adversarial_training',
                    training_data=train_loader,
                    validation_data=test_loader,
                    threat_model=threat_model)
