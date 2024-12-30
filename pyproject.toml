@@ -18,7 +18,10 @@ dependencies = [
     "sphinx",
     "sphinx-toolbox",
     "pytest",
-    "tqdm"
+    "tqdm",
+    "dash",
+    "dash-bootstrap-components",
+    "pandas"
 ]
 
 [tool.pytest.ini_options]
