@@ -12,9 +12,7 @@ Task-specific metrics must be specified by the user and are detailed in our :doc
 All task-specific metrics are computed on clean as well as adversarially corrupted data.
 """
 
-from typing import List
-
-from collections import namedtuple
+from typing import List, NamedTuple
 
 import torch
 
@@ -27,7 +25,17 @@ from robusthub import defenses
 from robusthub import attacks
 from robusthub import metrics
 
-Value = namedtuple('Value', ['mean', 'std'])
+
+class Value(NamedTuple):
+    """
+    Represents the average value of a metric over a data set.
+    """
+
+    #: Mean of the metric values over the data set.
+    mean: float
+
+    #: Standard deviation of the values over the data set.
+    std: float
 
 class Benchmark:
     """

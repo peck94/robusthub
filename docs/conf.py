@@ -20,7 +20,8 @@ author = 'Jonathan Peck'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinxcontrib.bibtex',
-    'sphinx.ext.mathjax'
+    'sphinx.ext.mathjax',
+    'sphinx_toolbox.more_autodoc.autonamedtuple'
 ]
 bibtex_bibfiles = ['attacks.bib', 'defenses.bib']
 

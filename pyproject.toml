@@ -16,6 +16,7 @@ dependencies = [
     "torchvision",
     "torchaudio",
     "sphinx",
+    "sphinx-toolbox",
     "pytest",
     "tqdm"
 ]
