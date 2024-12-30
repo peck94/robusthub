@@ -20,11 +20,11 @@ def load(repo: str, ident: str, **kwargs) -> Model:
         The model identifier.
 
     kwargs
-        Optional keyword arguments for `torch.hub.load`.
+        Optional keyword arguments for :code:`torch.hub.load`.
     
     Returns
     --------
     Model
-        A `Model` instance.
+        A :code:`Model` instance. This is an alias of :code:`torch.nn.Module`.
     """
     return torch.hub.load(repo, ident, **kwargs)
