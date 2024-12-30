@@ -15,4 +15,4 @@ def test_at(trainloader, testloader, device):
     defense = defenses.AdversarialTraining(trainloader, testloader, threat_model, 2, 2, device)
 
     # adversarially train
-    robust_model = defense.apply(model)
+    defense.apply(model)
