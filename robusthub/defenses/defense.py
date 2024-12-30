@@ -55,6 +55,16 @@ class Defense(ABC):
         """
         pass
 
+class Vanilla(Defense):
+    """
+    The vanilla defense simply returns a model as-is.
+    """
+    def __init__(self):
+        super().__init__()
+    
+    def apply(self, model: Model) -> Model:
+        return model
+
 def load(repo: str, ident: str, source: str = 'github', force_reload: bool = False, **kwargs) -> Defense:
     """
     Load an adversarial defense from a given repository.

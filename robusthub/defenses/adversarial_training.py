@@ -74,48 +74,18 @@ class AdversarialTraining(Defense):
         """
         optimizer = torch.optim.Adam(model.parameters())
         criterion = torch.nn.CrossEntropyLoss()
-        attack = ProjectedGradientDescent(model, self.threat, self.nb_iterations, self.device)
-        metric = Accuracy()
+        attack = ProjectedGradientDescent(self.threat, self.nb_iterations, self.device)
         for epoch in range(self.nb_epochs):
-            losses = []
-            accs = []
             progbar = tqdm(self.training_data, desc=f'Epoch {epoch + 1} / {self.nb_epochs}')
             for batch in progbar:
                 x_data, y_data = batch
                 x_data, y_data = x_data.to(self.device), y_data.to(self.device)
-                x_tilde = attack.apply(x_data, y_data)
+                x_tilde = attack.apply(model, x_data, y_data)
 
                 optimizer.zero_grad()
                 y_pred = model(x_tilde)
                 loss = criterion(y_pred, y_data)
                 loss.backward()
                 optimizer.step()
-
-                losses.append(loss.item())
-                accs.append(metric.compute(model, x_data, y_data))
-                progbar.set_postfix({
-                    'loss': np.mean(losses),
-                    'acc': np.mean(accs)})
-            
-            standard_losses, standard_accs = [], []
-            robust_losses, robust_accs = [], []
-            for batch in self.validation_data:
-                x_data, y_data = batch
-                x_data, y_data = x_data.to(self.device), y_data.to(self.device)
-                x_tilde = attack.apply(x_data, y_data)
-
-                y_pred = model(x_data)
-                loss = criterion(y_pred, y_data)
-                standard_losses.append(loss.item())
-                standard_accs.append(metric.compute(model, x_data, y_data))
-
-                y_pred = model(x_tilde)
-                loss = criterion(y_pred, y_data)
-                robust_losses.append(loss.item())
-                robust_accs.append(metric.compute(model, x_tilde, y_data))
-            print(f'Standard loss: {np.mean(standard_losses)}')
-            print(f'Robust loss  : {np.mean(robust_losses)}')
-            print(f'Standard acc : {np.mean(standard_accs):.2%}')
-            print(f'Robust acc   : {np.mean(robust_accs):.2%}')
 
         return model

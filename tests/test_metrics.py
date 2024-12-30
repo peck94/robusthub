@@ -11,10 +11,6 @@ def test_at(testloader, device):
     accuracy = metrics.Accuracy()
 
     accs = []
-    for batch in testloader:
-        x_data, y_data = batch
-        x_data, y_data = x_data.to(device), y_data.to(device)
-
-        accs.append(accuracy.compute(model, x_data, y_data))
-    
+    for x_data, y_data in testloader:
+        accs.append(accuracy.compute(model, x_data.to(device), y_data.to(device)))
     print(f'Accuracy: {np.sum(accs) / len(testloader):.2%}')

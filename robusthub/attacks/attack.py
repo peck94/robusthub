@@ -14,23 +14,22 @@ class Attack(ABC):
 
     Parameters
     -----------
-    model
-        The model to attack.
-    
     threat_model
         The threat model of the attack.
     """
-    def __init__(self, model: Model, threat_model: ThreatModel):
-        self.model = model
+    def __init__(self, threat_model: ThreatModel):
         self.threat = threat_model
 
     @abstractmethod
-    def apply(self, x_data: torch.Tensor, y_data: torch.Tensor | None) -> torch.Tensor:
+    def apply(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor | None) -> torch.Tensor:
         """
         Apply the attack to a batch of samples.
 
         Parameters
         -----------
+        model
+            Model to attack.
+
         x_data
             Tensor of input data samples.
         

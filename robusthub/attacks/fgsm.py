@@ -9,14 +9,14 @@ class FastGradientSignMethod(Attack):
     """
     The fast gradient sign attack proposed by :cite:`goodfellow2014explaining`.
     """
-    def __init__(self, model: Model, threat_model: ThreatModel):
-        super().__init__(model, threat_model)
+    def __init__(self, threat_model: ThreatModel):
+        super().__init__(threat_model)
     
-    def apply(self, x_data: torch.Tensor, y_data: torch.Tensor) -> torch.Tensor:
+    def apply(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> torch.Tensor:
         samples = x_data.clone().detach().requires_grad_()
         samples.retain_grad()
 
-        y_pred = self.model(samples)
+        y_pred = model(samples)
         loss = F.nll_loss(y_pred, y_data)
         loss.backward()
 
