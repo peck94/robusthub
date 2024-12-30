@@ -11,6 +11,7 @@ Contents
    
    intro
    models
+   metrics
    threats
    defenses
    attacks

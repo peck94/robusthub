@@ -1,5 +1,7 @@
 """
 Catalog of threat models.
+
+A *threat model* defines the feasible set of the adversarial attack.
 """
 import torch
 

@@ -1,5 +1,7 @@
 """
 Catalog of adversarial defenses and facilities for loading external defenses.
+
+A *defense* is an operator on the space of models. That is, it takes a model as input and returns another model as output.
 """
 import torch
 

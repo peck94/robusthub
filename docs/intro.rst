@@ -34,7 +34,7 @@ This example demonstrates how to apply a simple adversarial training defense. We
     # The model can be loaded from PyTorch Hub
     model = models.load('pytorch/vision', 'resnet18')
 
-    # The threat model is Linfty at eps = 0.03
+    # The threat model is Linfty at eps = 0.03 and clipping between (0,1)
     threat_model = threats.Composite([
         threats.Linf(.03),
         threats.Bounds(0, 1)])
@@ -62,7 +62,7 @@ One of the most important features of RobustHub is the ability to easily load ex
     # The model can be loaded from PyTorch Hub
     model = load_model('pytorch/vision', 'resnet18')
 
-    # The threat model is Linfty at eps = 0.03
+    # The threat model is Linfty at eps = 0.03 and clipping between (0,1)
     threat_model = threats.Composite([
         threats.Linf(.03),
         threats.Bounds(0, 1)])
