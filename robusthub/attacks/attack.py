@@ -1,5 +1,9 @@
 """
 Catalog of adversarial attacks.
+
+An *adversarial attack* takes a model and a batch of data samples and returns a new set of data samples called *adversarial examples*.
+These adversarial examples are optimized so that the model achieves the worst possible score on one or more task-specific metrics,
+subject to the constraints defined by a given threat model.
 """
 import torch
 

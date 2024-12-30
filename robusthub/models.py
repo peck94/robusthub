@@ -1,5 +1,9 @@
 """
 Facilities for loading models.
+
+A model in RobustHub is simply an instance of :code:`torch.nn.Module`, i.e. a PyTorch model.
+
+RobustHub relies on PyTorch Hub for loading models externally. Consult the `PyTorch Hub documentation page <https://pytorch.org/docs/stable/hub.html>`_ for more information.
 """
 
 import torch

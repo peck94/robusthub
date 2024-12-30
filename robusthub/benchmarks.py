@@ -3,9 +3,9 @@ Benchmarks evaluate combinations of models and adversarial defenses according to
 which are unique to the particular task the models need to solve, and *task-agnostic metrics*
 which are always relevant. All benchmarks always measure the following task-agnostic metrics:
 
-* Runtime of training.
+* Runtime of applying the defense.
 * Runtime of inference.
-* Memory consumption during training.
+* Memory consumption during application of the defense.
 * Memory consumption during inference.
 
 Task-specific metrics must be specified by the user and are detailed in our :doc:`Metrics <metrics>` page.

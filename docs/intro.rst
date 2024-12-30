@@ -68,10 +68,12 @@ One of the most important features of RobustHub is the ability to easily load ex
         threats.Bounds(0, 1)])
 
     # Load the defense from GitHub
-    defense = defenses.load('peck94/robusthub', 'adversarial_training',
-                   training_data=train_loader,
-                   validation_data=test_loader,
-                   threat_model=threat_model)
+    defense = defenses.load('peck94/robusthub', # repository
+                    'adversarial_training', # entrypoint
+                    # keyword arguments for defense constructor
+                    training_data=train_loader,
+                    validation_data=test_loader,
+                    threat_model=threat_model)
 
     # Adversarially training the model returns a robust model
     robust_model = defense.apply(model)

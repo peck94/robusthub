@@ -2,6 +2,7 @@
 Catalog of threat models.
 
 A *threat model* defines the feasible set of the adversarial attack.
+Threat models can be composed, in which case the feasible set is the intersection of all threat models. See :py:class:`robusthub.threats.Composite`.
 """
 import torch
 
@@ -80,7 +81,7 @@ class Bounds(ThreatModel):
 
 class Lp(ThreatModel):
     """
-    Lp threat model.
+    :math:`L_p` threat model.
 
     Parameters
     -----------
@@ -107,14 +108,14 @@ class Lp(ThreatModel):
 
 class Linf(Lp):
     """
-    Linf threat model.
+    :math:`L_\infty` threat model.
     """
     def __init__(self, epsilon: float):
         super().__init__(np.inf, epsilon)
 
 class L2(Lp):
     """
-    L2 threat model.
+    :math:`L_2` threat model.
     """
     def __init__(self, epsilon: float):
         super().__init__(2, epsilon)
