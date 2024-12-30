@@ -81,15 +81,29 @@ class Benchmark:
         result = {}
 
         # Profile defense
+        print('[*] Profiling defense')
         with profile(activities=activities, profile_memory=True) as prof:
             robust_model = defense.apply(model)
+        #ev = prof.key_averages()[0]
+        #result['defense'] = {
+        #    'memory': ev.cpu_memory_usage + ev.device_memory_usage,
+        #    'runtime': ev.cpu_time_total + ev.device_time_total
+        #}
 
         # Profile model inference
+        print('[*] Profiling runtime and memory usage')
         with profile(activities=activities, profile_memory=True) as prof:
             for x_data, _ in data_loader:
                 robust_model(x_data.to(self.device))
+        ev = prof.key_averages()[0]
+        result['model'] = {
+            'memory': ev.cpu_memory_usage + ev.device_memory_usage,
+            'runtime': ev.cpu_time_total + ev.device_time_total
+        }
 
         # Measure task-specific metrics
+        print('[*] Calculating task-specific metrics')
+        result['metrics'] = {}
         for metric in self.metrics:
             standard_values = []
             robust_values = []
@@ -102,7 +116,7 @@ class Benchmark:
 
                 standard_values.append(standard_value)
                 robust_values.append(robust_value)
-            result[metric.name] = {
+            result['metrics'][metric.name] = {
                 'standard': Value(mean=np.mean(standard_values), std=np.std(standard_values)),
                 'robust': Value(mean=np.mean(robust_values), std=np.std(robust_values))
             }
