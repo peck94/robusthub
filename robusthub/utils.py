@@ -15,10 +15,7 @@ from urllib.request import urlopen
 
 from types import ModuleType
 
-from typing import Callable, Union
-
-from robusthub.defenses.defense import Defense
-from robusthub.attacks.attack import Attack
+from typing import Callable, Any
 
 MODULE_HUBCONF = 'robusthubconf.py'
 VAR_DEPENDENCY = 'dependencies'
@@ -135,7 +132,7 @@ def _load_entry_from_hubconf(m: ModuleType, ident: str):
 
     return func
 
-def _load_local(repo: str, ident: str, **kwargs) -> Union[Attack, Defense]:
+def _load_local(repo: str, ident: str, **kwargs) -> Any:
     with _add_to_sys_path(repo):
         hubconf_path = os.path.join(repo, MODULE_HUBCONF)
         hub_module = _import_module(MODULE_HUBCONF, hubconf_path)

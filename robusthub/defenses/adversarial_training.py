@@ -7,13 +7,10 @@ Catalog of adversarial training defenses.
 
 import torch
 
-import numpy as np
-
 from robusthub.threats import ThreatModel
 from robusthub.models import Model
 from robusthub.defenses import Defense
 from robusthub.attacks import ProjectedGradientDescent
-from robusthub.metrics import Accuracy
 
 from tqdm import tqdm
 
