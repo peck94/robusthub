@@ -60,7 +60,7 @@ One of the most important features of RobustHub is the ability to easily load ex
     # ... snip ...
     
     # The model can be loaded from PyTorch Hub
-    model = load_model('pytorch/vision', 'resnet18')
+    model = models.load('pytorch/vision', 'resnet18')
 
     # The threat model is Linfty at eps = 0.03 and clipping between (0,1)
     threat_model = threats.Composite([
@@ -84,3 +84,41 @@ If you wish to contribute your own defense to RobustHub so it can be easily load
     As with external models in PyTorch Hub, loading external defenses in RobustHub executes third-party Python code.
     Specifically, RobustHub downloads and executes the provided :code:`robusthubconf.py` file, which may contain arbitrary code.
     **Never load defenses from untrusted sources.**
+
+Using an external attack
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Similarly to defenses, adversarial *attacks* can also be loaded from external sources:
+
+.. code-block:: python
+
+    from robusthub import models, attacks, threats
+
+    # Load CIFAR-10
+
+    # ... snip ...
+    
+    # The model can be loaded from PyTorch Hub
+    model = models.load('pytorch/vision', 'resnet18')
+
+    # The threat model is Linfty at eps = 0.03 and clipping between (0,1)
+    threat_model = threats.Composite([
+        threats.Linf(.03),
+        threats.Bounds(0, 1)])
+
+    # Load the attack from GitHub
+    attack = attacks.load('peck94/robusthub', # repository
+                    'fgsm', # entrypoint
+                    # keyword arguments for attack constructor
+                    threat_model=threat_model)
+
+    # Attack the model
+    for x_batch, y_batch in test_loader:
+        x_tilde = attack.apply(model, x_batch, y_batch)
+
+If you wish to contribute your own attack to RobustHub so it can be easily loaded via this interface, consult our page on :doc:`contributing <publish>`.
+
+.. warning::
+    As with external defenses, loading external attacks in RobustHub executes third-party Python code.
+    Specifically, RobustHub downloads and executes the provided :code:`robusthubconf.py` file, which may contain arbitrary code.
+    **Never load attacks from untrusted sources.**
