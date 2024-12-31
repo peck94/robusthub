@@ -21,7 +21,8 @@ dependencies = [
     "tqdm",
     "dash",
     "dash-bootstrap-components",
-    "pandas"
+    "pandas",
+    "alembic"
 ]
 
 [tool.pytest.ini_options]
