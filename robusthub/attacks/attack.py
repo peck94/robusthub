@@ -11,6 +11,7 @@ from abc import ABC, abstractmethod
 
 from robusthub.models import Model
 from robusthub.threats import ThreatModel
+from robusthub.utils import _get_github, _load_local
 
 class Attack(ABC):
     """
@@ -46,3 +47,43 @@ class Attack(ABC):
             Tensor of corrupted data samples.
         """
         pass
+
+def load(repo: str, ident: str, source: str = 'github', force_reload: bool = False, **kwargs) -> Attack:
+    """
+    Load an adversarial attack from a given repository.
+
+    Parameters
+    -----------
+    repo
+        The repository identifier. If `source` is `local`, this is the path to the local directory where the :code:`robusthubconf.py` file can be found.
+
+    ident
+        The attack identifier.
+    
+    source
+        Source to load from. Either `local` or `github`.
+    
+    force_reload
+        Force reloading of the module.
+
+    kwargs
+        Optional keyword arguments for the attack.
+    
+    Returns
+    --------
+    Attack
+        An `Attack` instance.
+    """
+    source = source.lower()
+
+    if source not in ['github', 'local']:
+        raise ValueError(f'Unknown source: {repo}. Should be local or github.')
+    
+    if source == 'github':
+        repo = _get_github(repo, force_reload)
+    
+    attack = _load_local(repo, ident, **kwargs)
+
+    assert isinstance(attack, Attack), 'Not a valid attack'
+
+    return attack
