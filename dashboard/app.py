@@ -38,9 +38,9 @@ app.layout = html.Div(
         dcc.Location(id="url"),
         dbc.NavbarSimple(
             children=[
-                dcc.Link("Home", href="home"),
-                dbc.NavLink("Documentation", href="/page-1", active="exact"),
-                dbc.NavLink("GitHub", href="/page-2", active="exact"),
+                dbc.NavLink("Home", href="/"),
+                dbc.NavLink("Documentation", href="/page-1"),
+                dbc.NavLink("GitHub", href="/page-2"),
             ],
             brand="RobustHub",
             color="primary",

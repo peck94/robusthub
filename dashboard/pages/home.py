@@ -3,7 +3,7 @@ from dash import html
 
 import pandas as pd
 
-from dash import html, dash_table
+from dash import html, dash_table, dcc
 
 import dash_bootstrap_components as dbc
 
@@ -28,14 +28,18 @@ def create_catalog(data_dict: dict):
     return data_catalog
 
 model_title = html.H2('Model catalog')
+model_head = html.Thead(html.Tr([
+    html.Th('Name'), html.Th('Repository'), html.Th('Tags')
+]))
 models = adapter.load_models()
-print(models)
-models_dict = {
-    'Name': [model.name for model in models],
-    'Repository': [model.repo for model in models],
-    'Tags': ['none' for model in models]
-}
-model_catalog = create_catalog(models_dict)
+model_list = [
+    html.Tr([
+        html.Td(dcc.Link(model.name, href=f'/model/{model.id}')),
+        html.Td(model.repo),
+        html.Td('none')
+    ]) for model in models
+]
+model_table = dbc.Table([model_head] + model_list, bordered=True)
 
 defense_title = html.H2('Defense catalog')
 defenses = adapter.load_defenses()
@@ -61,7 +65,7 @@ layout = html.Div(
             dbc.Col(model_title)
         ),
         dbc.Row(
-            dbc.Col(model_catalog)
+            dbc.Col(model_table)
         ),
         dbc.Row(
             dbc.Col(defense_title)
