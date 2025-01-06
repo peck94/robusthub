@@ -76,6 +76,7 @@ def render_page_content(pathname):
 
         model_title = html.H2('Model catalog')
         models = adapter.load_models()
+        print(models)
         models_dict = {
             'Name': [model.name for model in models],
             'Repository': [model.repo for model in models],
