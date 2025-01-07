@@ -29,9 +29,15 @@ class Adapter:
 
     def load_attacks(self) -> List[Attack]:
         return self._load_table(Attack)
+    
+    def get_attack(self, id: int) -> Attack:
+        return self._get_table(Attack, id)
 
     def load_defenses(self) -> List[Defense]:
         return self._load_table(Defense)
+    
+    def get_defense(self, id: int) -> Defense:
+        return self._get_table(Defense, id)
 
     def load_benchmarks(self) -> List[Benchmark]:
         return self._load_table(Benchmark)
