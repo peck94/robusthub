@@ -27,6 +27,32 @@ def create_catalog(models: List, slug: str):
 
     return model_table
 
+jumbotron = html.Div(
+    dbc.Container(
+        [
+            html.H1("RobustHub", className="display-3"),
+            html.P(
+                "Robust machine learning for everyone.",
+                className="lead",
+            ),
+            html.Hr(className="my-2"),
+            html.P(
+                "Design, compare and deploy robust machine learning models."
+            ),
+            html.P(
+                dbc.ButtonGroup([
+                    dbc.Button("Documentation", color="primary", outline=True),
+                    dbc.Button("Contribute", color="primary", outline=True),
+                ]),
+                className="lead"
+            ),
+        ],
+        fluid=True,
+        className="py-3",
+    ),
+    className="p-3 bg-body-secondary rounded-3",
+)
+
 model_title = html.H2('Model catalog')
 models = adapter.load_models()
 model_table = create_catalog(models, 'model')
@@ -41,6 +67,7 @@ attack_table = create_catalog(attacks, 'attack')
 
 layout = html.Div(
     [
+        jumbotron,
         dbc.Row(
             dbc.Col(model_title)
         ),
