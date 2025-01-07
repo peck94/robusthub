@@ -7,7 +7,10 @@ import dash_bootstrap_components as dbc
 
 from adapter import Adapter
 
-adapter = Adapter('sqlite:///../robusthub.db')
+from config import Config
+
+c = Config()
+adapter = Adapter(c.data['database'])
 
 dash.register_page(__name__, path_template="/model/<model_id>")
 

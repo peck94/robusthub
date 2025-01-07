@@ -7,7 +7,10 @@ from typing import List
 
 from adapter import Adapter
 
-adapter = Adapter('sqlite:///../robusthub.db')
+from config import Config
+
+c = Config()
+adapter = Adapter(c.data['database'])
 
 dash.register_page(__name__, path='/')
 
