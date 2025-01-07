@@ -23,7 +23,7 @@ def layout(model_id=0, **kwargs):
                 html.Th('Results')
             ]))
         ] + [html.Tr([
-                html.Td(b.dataset.name),
+                html.Td(b.dataset.title),
                 html.Td(b.defense.title),
                 html.Td(b.attack.title),
                 html.Td(print_results(b.results))

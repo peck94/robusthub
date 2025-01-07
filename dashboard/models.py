@@ -46,11 +46,11 @@ class Dataset(Base):
     __tablename__ = 'datasets'
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
-    name: orm.Mapped[str] = orm.mapped_column(sa.String(50))
+    title: orm.Mapped[str] = orm.mapped_column(sa.String(50))
     url: orm.Mapped[str] = orm.mapped_column(sa.String(256))
 
     def __repr__(self) -> str:
-        return f'Dataset(id={self.id}, name={self.name}, url={self.url})'
+        return f'Dataset(id={self.id}, title={self.title}, url={self.url})'
 
 class Benchmark(Base):
     __tablename__ = 'benchmarks'

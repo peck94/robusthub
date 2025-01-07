@@ -65,6 +65,18 @@ attacks_title = html.H2('Attack catalog')
 attacks = adapter.load_attacks()
 attack_table = create_catalog(attacks, 'attack')
 
+datasets_title = html.H2('Dataset catalog')
+datasets = adapter.load_datasets()
+datasets_table = dbc.Table([
+    html.Thead(html.Tr([
+        html.Th('Name'), html.Th('URL')
+    ]))] + [
+        html.Tr([
+            html.Td(dcc.Link(dataset.title, href=f'/dataset/{dataset.id}')),
+            html.Td(dcc.Link(dataset.url, href=dataset.url))
+        ]) for dataset in datasets
+    ], bordered=True)
+
 layout = html.Div(
     [
         jumbotron,
@@ -85,6 +97,12 @@ layout = html.Div(
         ),
         dbc.Row(
             dbc.Col(attack_table)
+        ),
+        dbc.Row(
+            dbc.Col(datasets_title)
+        ),
+        dbc.Row(
+            dbc.Col(datasets_table)
         )
     ]
 )

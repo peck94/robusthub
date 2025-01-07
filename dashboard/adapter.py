@@ -45,6 +45,12 @@ class Adapter:
     
     def get_defense(self, id: int) -> Defense:
         return self._get_table(Defense, id)
+    
+    def load_datasets(self) -> List[Dataset]:
+        return self._load_table(Dataset)
+    
+    def get_dataset(self, id: int) -> Dataset:
+        return self._get_table(Dataset, id)
 
     def load_benchmarks(self) -> List[Benchmark]:
         return self._load_table(Benchmark)
@@ -70,7 +76,7 @@ class Adapter:
                                  repo=defense.repo,
                                  arguments=defense.arguments)
         dataset = self._find_table(Dataset,
-                                   name=dataset.name,
+                                   title=dataset.title,
                                    url=dataset.url)
 
         with orm.Session(self.engine) as sess:
