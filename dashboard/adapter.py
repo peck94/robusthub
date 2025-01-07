@@ -3,7 +3,7 @@ import sqlalchemy.orm as orm
 
 from typing import List, Optional
 
-from models import Base, Model, Attack, Defense, Benchmark
+from models import Base, Model, Attack, Defense, Benchmark, Dataset
 
 class Adapter:
     def __init__(self, url: str):
@@ -56,7 +56,7 @@ class Adapter:
             items = list(session.scalars(stmt))
         return items
 
-    def save_benchmark(self, model: Model, defense: Defense, attack: Attack, results: str):
+    def save_benchmark(self, model: Model, dataset: Dataset, defense: Defense, attack: Attack, results: str):
         model = self._find_table(Model,
                                  name=model.name,
                                  repo=model.repo,
@@ -69,12 +69,16 @@ class Adapter:
                                  name=defense.name,
                                  repo=defense.repo,
                                  arguments=defense.arguments)
+        dataset = self._find_table(Dataset,
+                                   name=dataset.name,
+                                   url=dataset.url)
 
         with orm.Session(self.engine) as sess:
             benchmark = Benchmark(
                 model_id=model.id,
                 defense_id=defense.id,
                 attack_id=attack.id,
+                dataset_id=dataset.id,
                 results=results
             )
             sess.add(benchmark)

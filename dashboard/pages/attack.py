@@ -5,6 +5,8 @@ import dash_bootstrap_components as dbc
 
 from adapter import Adapter
 
+from utils import print_results
+
 adapter = Adapter('sqlite:///../robusthub.db')
 
 dash.register_page(__name__, path_template="/attack/<attack_id>")
@@ -16,13 +18,15 @@ def layout(attack_id=0, **kwargs):
         benchmark_list = dbc.Table([
             html.Thead(html.Tr([
                 html.Th('Model'),
+                html.Th('Dataset'),
                 html.Th('Defense'),
                 html.Th('Results')
             ]))
         ] + [html.Tr([
                 html.Td(b.model.title),
+                html.Td(b.dataset.name),
                 html.Td(b.defense.title),
-                html.Td(b.results)
+                html.Td(print_results(b.results))
             ])
             for b in benchmarks
         ])

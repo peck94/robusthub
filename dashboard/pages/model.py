@@ -17,11 +17,13 @@ def layout(model_id=0, **kwargs):
         benchmarks = adapter.get_benchmarks(model_id=model.id)
         benchmark_list = dbc.Table([
             html.Thead(html.Tr([
+                html.Th('Dataset'),
                 html.Th('Defense'),
                 html.Th('Attack'),
                 html.Th('Results')
             ]))
         ] + [html.Tr([
+                html.Td(b.dataset.name),
                 html.Td(b.defense.title),
                 html.Td(b.attack.title),
                 html.Td(print_results(b.results))
