@@ -46,10 +46,16 @@ class Benchmark(Base):
     __tablename__ = 'benchmarks'
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
-    model: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey('models.id'))
-    attack: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey('attacks.id'))
-    defense: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey('defenses.id'))
+
+    model_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey('models.id'))
+    attack_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey('attacks.id'))
+    defense_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey('defenses.id'))
+
     results: orm.Mapped[str] = orm.mapped_column(sa.Text())
 
+    model: orm.Mapped[Model] = orm.relationship(Model, foreign_keys='Benchmark.model_id', lazy='joined')
+    attack: orm.Mapped[Attack] = orm.relationship(Attack, foreign_keys='Benchmark.attack_id', lazy='joined')
+    defense: orm.Mapped[Defense] = orm.relationship(Defense, foreign_keys='Benchmark.defense_id', lazy='joined')
+
     def __repr__(self) -> str:
-        return f'Benchmark(id={self.id}, model={self.model}, attack={self.attack}, defense={self.defense}, results={self.results})'
+        return f'Benchmark(id={self.id}, model={self.model_id}, attack={self.attack_id}, defense={self.defense_id}, results={self.results})'

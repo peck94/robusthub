@@ -37,6 +37,12 @@ class Value(NamedTuple):
     #: Standard deviation of the values over the data set.
     std: float
 
+    def __repr__(self):
+        """
+        String representation of this value.
+        """
+        return f"{{'mean': '{self.mean}', 'std': {self.std}}}"
+
 class Benchmark:
     """
     Base class for all benchmarks.
@@ -78,7 +84,10 @@ class Benchmark:
             A dictionary of benchmark results.
         """
         activities = [ProfilerActivity.CPU, ProfilerActivity.CUDA, ProfilerActivity.XPU]
-        result = {}
+        result = {
+            'model': {},
+            'metrics': {}
+        }
 
         # Profile defense
         print('[*] Profiling defense')
@@ -91,19 +100,28 @@ class Benchmark:
         #}
 
         # Profile model inference
-        print('[*] Profiling runtime and memory usage')
+        print('[*] Profiling runtime and memory usage (standard model)')
+        with profile(activities=activities, profile_memory=True) as prof:
+            for x_data, _ in data_loader:
+                model(x_data.to(self.device))
+        ev = prof.key_averages()[0]
+        result['model']['standard'] = {
+            'memory': ev.cpu_memory_usage + ev.device_memory_usage,
+            'runtime': ev.cpu_time_total + ev.device_time_total
+        }
+
+        print('[*] Profiling runtime and memory usage (robust model)')
         with profile(activities=activities, profile_memory=True) as prof:
             for x_data, _ in data_loader:
                 robust_model(x_data.to(self.device))
         ev = prof.key_averages()[0]
-        result['model'] = {
+        result['model']['robust'] = {
             'memory': ev.cpu_memory_usage + ev.device_memory_usage,
             'runtime': ev.cpu_time_total + ev.device_time_total
         }
 
         # Measure task-specific metrics
         print('[*] Calculating task-specific metrics')
-        result['metrics'] = {}
         for metric in self.metrics:
             standard_values = []
             robust_values = []

@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 
-from typing import List
+from typing import List, Optional
 
 from models import Base, Model, Attack, Defense, Benchmark
 
@@ -17,6 +17,13 @@ class Adapter:
     
     def _get_table(self, table: sa.Table, id: int) -> Base:
         stmt = sa.select(table).where(sa.text(f'id = {id}'))
+        with orm.Session(self.engine) as session:
+            item = session.scalars(stmt).first()
+        return item
+    
+    def _find_table(self, table: sa.Table, **kwargs) -> Optional[Base]:
+        parts = [f'{kw} = "{kwargs[kw]}"' for kw in kwargs if kwargs[kw] is not None]
+        stmt = sa.select(table).where(sa.text(' and '.join(parts)))
         with orm.Session(self.engine) as session:
             item = session.scalars(stmt).first()
         return item
@@ -46,5 +53,29 @@ class Adapter:
         conds = ' and '.join([f'{arg} = {kwargs[arg]}' for arg in kwargs])
         stmt = sa.select(Benchmark).where(sa.text(conds))
         with orm.Session(self.engine) as session:
-            items = session.scalars(stmt)
+            items = list(session.scalars(stmt))
         return items
+
+    def save_benchmark(self, model: Model, defense: Defense, attack: Attack, results: str):
+        model = self._find_table(Model,
+                                 name=model.name,
+                                 repo=model.repo,
+                                 arguments=model.arguments)
+        attack = self._find_table(Attack,
+                                 name=attack.name,
+                                 repo=attack.repo,
+                                 arguments=attack.arguments)
+        defense = self._find_table(Defense,
+                                 name=defense.name,
+                                 repo=defense.repo,
+                                 arguments=defense.arguments)
+
+        with orm.Session(self.engine) as sess:
+            benchmark = Benchmark(
+                model_id=model.id,
+                defense_id=defense.id,
+                attack_id=attack.id,
+                results=results
+            )
+            sess.add(benchmark)
+            sess.commit()

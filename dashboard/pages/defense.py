@@ -12,7 +12,7 @@ dash.register_page(__name__, path_template="/defense/<defense_id>")
 def layout(defense_id=0, **kwargs):
     defense = adapter.get_defense(defense_id)
     if defense:
-        benchmarks = adapter.get_benchmarks(defense=defense.id)
+        benchmarks = adapter.get_benchmarks(defense_id=defense.id)
         benchmark_list = dbc.Table([
             html.Thead(html.Tr([
                 html.Th('Model'),
@@ -20,9 +20,9 @@ def layout(defense_id=0, **kwargs):
                 html.Th('Results')
             ]))
         ] + [html.Tr([
-                html.Td('model'),
-                html.Td('attack'),
-                html.Td('result')
+                html.Td(b.model.title),
+                html.Td(b.attack.title),
+                html.Td(b.results)
             ])
             for b in benchmarks
         ])

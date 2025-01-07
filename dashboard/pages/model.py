@@ -1,6 +1,8 @@
 import dash
 from dash import html
 
+from utils import print_results
+
 import dash_bootstrap_components as dbc
 
 from adapter import Adapter
@@ -12,7 +14,7 @@ dash.register_page(__name__, path_template="/model/<model_id>")
 def layout(model_id=0, **kwargs):
     model = adapter.get_model(model_id)
     if model:
-        benchmarks = adapter.get_benchmarks(model=model.id)
+        benchmarks = adapter.get_benchmarks(model_id=model.id)
         benchmark_list = dbc.Table([
             html.Thead(html.Tr([
                 html.Th('Defense'),
@@ -20,9 +22,9 @@ def layout(model_id=0, **kwargs):
                 html.Th('Results')
             ]))
         ] + [html.Tr([
-                html.Td('defense'),
-                html.Td('attack'),
-                html.Td('result')
+                html.Td(b.defense.title),
+                html.Td(b.attack.title),
+                html.Td(print_results(b.results))
             ])
             for b in benchmarks
         ])

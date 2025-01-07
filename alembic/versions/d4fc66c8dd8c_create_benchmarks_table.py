@@ -21,9 +21,9 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.create_table('benchmarks',
                     sa.Column('id', sa.Integer, primary_key=True),
-                    sa.Column('model', sa.Integer, sa.ForeignKey('models.id'), nullable=False),
-                    sa.Column('defense', sa.Integer, sa.ForeignKey('defenses.id'), nullable=False),
-                    sa.Column('attack', sa.Integer, sa.ForeignKey('attacks.id'), nullable=False),
+                    sa.Column('model_id', sa.Integer, sa.ForeignKey('models.id'), nullable=False),
+                    sa.Column('defense_id', sa.Integer, sa.ForeignKey('defenses.id'), nullable=False),
+                    sa.Column('attack_id', sa.Integer, sa.ForeignKey('attacks.id'), nullable=False),
                     sa.Column('results', sa.Text(), nullable=False))
 
 
