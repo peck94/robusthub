@@ -15,12 +15,11 @@ jumbotron = html.Div(
             ),
             html.Hr(className="my-2"),
             html.P(
-                "Design, compare and deploy robust machine learning models. "
-                "Check out the model catalog, or learn how it works. Contribute defenses."
+                "Design, compare and deploy robust machine learning models."
             ),
             html.P(
                 dbc.ButtonGroup([
-                    dbc.Button("Model catalog", color="primary", outline=True),
+                    dbc.Button("Catalogs", color="primary", outline=True, href="/"),
                     dbc.Button("Documentation", color="primary", outline=True),
                     dbc.Button("Contribute", color="primary", outline=True),
                 ]),

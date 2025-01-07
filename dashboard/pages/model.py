@@ -26,9 +26,20 @@ def layout(model_id=0, **kwargs):
             ])
             for b in benchmarks
         ])
+
         return html.Div([
             dbc.Row(
-                dbc.Col(html.H1(f'Model: {model.name}'))
+                dbc.Col(html.H1(f'{model.title}'))
+            ),
+            dbc.Row(
+                dbc.Col(html.P("Loading the model:"))
+            ),
+            dbc.Row(
+                dbc.Col(html.Pre(html.Code([
+                    "from robusthub import models",
+                    html.Br(),
+                    f"model = models.load('{model.repo}', '{model.name}')"
+                ])))
             ),
             dbc.Row(
                 dbc.Col(html.H2('Benchmarks'))

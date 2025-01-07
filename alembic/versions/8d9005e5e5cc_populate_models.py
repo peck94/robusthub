@@ -18,16 +18,17 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 models = [
-    {'name': 'resnet18', 'repo': 'pytorch/vision', 'arguments': '{}'},
-    {'name': 'wide_resnet101_2', 'repo': 'pytorch/vision', 'arguments': '{}'}
+    {'name': 'resnet18', 'title': 'ResNet-18', 'repo': 'pytorch/vision', 'arguments': '{}'},
+    {'name': 'wide_resnet101_2', 'title': 'WideResNet-101', 'repo': 'pytorch/vision', 'arguments': '{}'}
 ]
 
 def upgrade() -> None:
     for model in models:
         name = model['name']
+        title = model['title']
         repo = model['repo']
         args = model['arguments']
-        op.execute(f"insert into models (name, repo, arguments) values ('{name}', '{repo}', '{args}')")
+        op.execute(f"insert into models (name, title, repo, arguments) values ('{name}', '{title}', '{repo}', '{args}')")
 
 
 def downgrade() -> None:

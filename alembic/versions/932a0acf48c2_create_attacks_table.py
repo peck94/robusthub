@@ -22,6 +22,7 @@ def upgrade() -> None:
     op.create_table('attacks',
                     sa.Column('id', sa.Integer, primary_key=True),
                     sa.Column('name', sa.String(50), nullable=False),
+                    sa.Column('title', sa.String(128), nullable=False),
                     sa.Column('repo', sa.String(128), nullable=False),
                     sa.Column('arguments', sa.Text(), nullable=True))
 
