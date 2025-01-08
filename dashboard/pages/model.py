@@ -21,12 +21,14 @@ def layout(model_id=0, **kwargs):
         benchmark_list = dbc.Table([
             html.Thead(html.Tr([
                 html.Th('Dataset'),
+                html.Th('Threat model'),
                 html.Th('Defense'),
                 html.Th('Attack'),
                 html.Th('Results')
             ]))
         ] + [html.Tr([
                 html.Td(b.dataset.title),
+                html.Td(b.threat_model),
                 html.Td(b.defense.title),
                 html.Td(b.attack.title),
                 html.Td(print_results(b.results))

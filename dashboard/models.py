@@ -62,7 +62,7 @@ class Benchmark(Base):
     defense_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey('defenses.id'))
     dataset_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey('datasets.id'))
 
-    threat_model: orm.Mapped[str] = orm.mapped_collumn(sa.Text())
+    threat_model: orm.Mapped[str] = orm.mapped_column(sa.Text())
     results: orm.Mapped[str] = orm.mapped_column(sa.Text())
 
     model: orm.Mapped[Model] = orm.relationship(Model, foreign_keys='Benchmark.model_id', lazy='joined')

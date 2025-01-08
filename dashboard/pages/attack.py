@@ -23,12 +23,14 @@ def layout(attack_id=0, **kwargs):
             html.Thead(html.Tr([
                 html.Th('Model'),
                 html.Th('Dataset'),
+                html.Th('Threat model'),
                 html.Th('Defense'),
                 html.Th('Results')
             ]))
         ] + [html.Tr([
                 html.Td(b.model.title),
                 html.Td(b.dataset.title),
+                html.Td(b.threat_model),
                 html.Td(b.defense.title),
                 html.Td(print_results(b.results))
             ])
