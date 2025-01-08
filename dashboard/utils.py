@@ -11,11 +11,35 @@ def to_ratio(a: float, b: float) -> float:
 
 def print_results(results_str: str):
     results = ast.literal_eval(results_str)
-    return html.Div([
-        html.P(f"Runtime: {to_ratio(float(results['model']['standard']['runtime']), float(results['model']['robust']['runtime'])):.2f}"),
-        html.P(f"Memory : {humanize.naturalsize(results['model']['standard']['memory'])} / {humanize.naturalsize(results['model']['robust']['memory'])}"),
-        html.Hr()
+    return html.Table([
+        html.Tr([
+            html.Th('Metric'),
+            html.Th('Baseline'),
+            html.Th('Defense'),
+            html.Th('Robust')
+        ]),
+        html.Tr([
+            html.Td('Runtime'),
+            html.Td(results['model']['standard']['runtime']),
+            html.Td(results['defense']['runtime']),
+            html.Td(results['model']['robust']['runtime'])
+        ]),
+        html.Tr([
+            html.Td('Memory'),
+            html.Td(results['model']['standard']['memory']),
+            html.Td(results['defense']['memory']),
+            html.Td(results['model']['robust']['memory'])
+        ]),
+        html.Tr([
+            html.Th('Metric'),
+            html.Th('Standard'),
+            html.Th('Robust')
+        ])
     ] + [
-        html.P(f"{metric}: {float(results['metrics'][metric]['standard']['mean']):.2f} ({float(results['metrics'][metric]['standard']['std']):.2f}) / {float(results['metrics'][metric]['robust']['mean']):.2f} ({float(results['metrics'][metric]['robust']['std']):.2f})")
+        html.Tr([
+            html.Td(metric),
+            html.Td(f'{float(results['metrics'][metric]['standard']['mean']):.2f}'),
+            html.Td(f'{float(results['metrics'][metric]['robust']['mean']):.2f}')
+        ])
         for metric in results['metrics']
     ])
