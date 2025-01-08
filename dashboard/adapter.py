@@ -62,7 +62,7 @@ class Adapter:
             items = list(session.scalars(stmt))
         return items
 
-    def save_benchmark(self, model: Model, dataset: Dataset, defense: Defense, attack: Attack, results: str):
+    def save_benchmark(self, model: Model, dataset: Dataset, threat: str, defense: Defense, attack: Attack, results: str):
         model = self._find_table(Model,
                                  name=model.name,
                                  repo=model.repo,
@@ -85,6 +85,7 @@ class Adapter:
                 defense_id=defense.id,
                 attack_id=attack.id,
                 dataset_id=dataset.id,
+                threat_model=threat,
                 results=results
             )
             sess.add(benchmark)

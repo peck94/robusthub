@@ -16,9 +16,9 @@ from typing import List, NamedTuple
 
 import torch
 
-import numpy as np
+import cProfile, pstats
 
-from torch.profiler import profile, ProfilerActivity
+import numpy as np
 
 from robusthub import models
 from robusthub import defenses
@@ -83,41 +83,48 @@ class Benchmark:
         dict
             A dictionary of benchmark results.
         """
-        activities = [ProfilerActivity.CPU, ProfilerActivity.CUDA, ProfilerActivity.XPU]
         result = {
             'model': {},
+            'defense': {},
             'metrics': {}
         }
 
         # Profile defense
         print('[*] Profiling defense')
-        with profile(activities=activities, profile_memory=True) as prof:
+        with cProfile.Profile() as pr:
             robust_model = defense.apply(model)
-        #ev = prof.key_averages()[0]
-        #result['defense'] = {
-        #    'memory': ev.cpu_memory_usage + ev.device_memory_usage,
-        #    'runtime': ev.cpu_time_total + ev.device_time_total
-        #}
+            pr.create_stats()
+        ps = pstats.Stats(pr)
+        profile = ps.get_stats_profile()
+        runtime = max([profile.func_profiles[fp].cumtime for fp in profile.func_profiles])
+        result['defense'] = {
+            'memory': 0,
+            'runtime': runtime
+        }
 
         # Profile model inference
         print('[*] Profiling runtime and memory usage (standard model)')
-        with profile(activities=activities, profile_memory=True) as prof:
+        with cProfile.Profile() as pr:
             for x_data, _ in data_loader:
                 model(x_data.to(self.device))
-        ev = prof.key_averages()[0]
+            pr.create_stats()
+        ps = pstats.Stats(pr)
+        runtime = max([profile.func_profiles[fp].cumtime for fp in profile.func_profiles])
         result['model']['standard'] = {
-            'memory': ev.cpu_memory_usage + ev.device_memory_usage,
-            'runtime': ev.cpu_time_total + ev.device_time_total
+            'memory': 0,
+            'runtime': runtime
         }
 
         print('[*] Profiling runtime and memory usage (robust model)')
-        with profile(activities=activities, profile_memory=True) as prof:
+        with cProfile.Profile() as pr:
             for x_data, _ in data_loader:
                 robust_model(x_data.to(self.device))
-        ev = prof.key_averages()[0]
+            pr.create_stats()
+        ps = pstats.Stats(pr)
+        runtime = max([profile.func_profiles[fp].cumtime for fp in profile.func_profiles])
         result['model']['robust'] = {
-            'memory': ev.cpu_memory_usage + ev.device_memory_usage,
-            'runtime': ev.cpu_time_total + ev.device_time_total
+            'memory': 0,
+            'runtime': runtime
         }
 
         # Measure task-specific metrics

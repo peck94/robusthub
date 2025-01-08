@@ -24,7 +24,6 @@ class ProjectedGradientDescent(Attack):
 
         for _ in range(self.iterations):
             samples = x_tilde.clone().detach().requires_grad_()
-            samples.retain_grad()
 
             y_pred = model(samples)
             loss = F.nll_loss(y_pred, y_data)
@@ -32,5 +31,7 @@ class ProjectedGradientDescent(Attack):
 
             deltas = torch.sign(samples.grad)
             x_tilde = self.threat.project(x_data, x_tilde + deltas)
-            samples.grad.zero_()
+            
+            samples.grad = None
+
         return x_tilde

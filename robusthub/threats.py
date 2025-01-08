@@ -39,6 +39,12 @@ class ThreatModel(ABC):
         """
         pass
 
+    def __repr__(self) -> str:
+        """
+        String represenation of this threat model.
+        """
+        return "ThreatModel"
+
 class Composite(ThreatModel):
     """
     Sequentially compose multiple threat models.
@@ -55,6 +61,9 @@ class Composite(ThreatModel):
         for threat in self.threats:
             x_proj = threat.project(x_orig, x_proj)
         return x_proj
+    
+    def __repr__(self) -> str:
+        return "; ".join([str(t) for t in self.threats])
 
 class Bounds(ThreatModel):
     """
@@ -78,6 +87,9 @@ class Bounds(ThreatModel):
         Clip the values of the data to the specified range.
         """
         return torch.clamp(x_tilde, self.lower, self.upper)
+    
+    def __repr__(self) -> str:
+        return f"Bounds({self.lower}, {self.upper})"
 
 class Lp(ThreatModel):
     """
@@ -105,6 +117,12 @@ class Lp(ThreatModel):
 
         x_proj = x_orig + torch.where(norms > self.epsilon, self.epsilon * deltas / norms, deltas).view(x_orig.shape)
         return x_proj
+    
+    def __repr__(self) -> str:
+        if np.isfinite(self.p):
+            return f"L{self.p}({self.epsilon:.2f})"
+        else:
+            return f"Linf({self.epsilon:.2f})"
 
 class Linf(Lp):
     """

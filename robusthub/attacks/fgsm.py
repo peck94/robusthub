@@ -14,7 +14,6 @@ class FastGradientSignMethod(Attack):
     
     def apply(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> torch.Tensor:
         samples = x_data.clone().detach().requires_grad_()
-        samples.retain_grad()
 
         y_pred = model(samples)
         loss = F.nll_loss(y_pred, y_data)

@@ -30,6 +30,7 @@ def upgrade() -> None:
                     sa.Column('defense_id', sa.Integer, sa.ForeignKey('defenses.id'), nullable=False),
                     sa.Column('attack_id', sa.Integer, sa.ForeignKey('attacks.id'), nullable=False),
                     sa.Column('dataset_id', sa.Integer, sa.ForeignKey('datasets.id'), nullable=False),
+                    sa.Column('threat_model', sa.Text(), nullable=False),
                     sa.Column('results', sa.Text(), nullable=False))
 
 
