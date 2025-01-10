@@ -22,7 +22,8 @@ dependencies = [
     "dash",
     "dash-bootstrap-components",
     "pandas",
-    "alembic"
+    "alembic",
+    "humanize"
 ]
 
 [tool.pytest.ini_options]
