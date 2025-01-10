@@ -6,6 +6,7 @@ Catalog of randomized smoothing defenses.
 """
 
 import torch
+import torch.nn.functional as F
 
 from robusthub.models import Model, CompositeModel
 from robusthub.defenses.defense import Defense
@@ -24,12 +25,16 @@ class SmoothedModel(Model):
     
     sigma
         Variance of the noise added to the samples.
+    
+    n_classes
+        Number of classes.
     """
-    def __init__(self, model: Model, n_samples: int, sigma: float):
+    def __init__(self, model: Model, n_samples: int, sigma: float, n_classes: int):
         super().__init__()
         self.model = model
         self.n_samples = n_samples
         self.sigma = sigma
+        self.n_classes = n_classes
     
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         y_outputs = []
@@ -37,7 +42,7 @@ class SmoothedModel(Model):
             eta = self.sigma * torch.randn_like(x)
             y_outputs.append(self.model(x + eta))
         y_preds = torch.stack([torch.argmax(y_output, dim=1) for y_output in y_outputs], dim=0)
-        return torch.mode(y_preds, dim=0)[0]
+        return F.one_hot(torch.mode(y_preds, dim=0)[0], self.n_classes)
 
 class RandomizedSmoothing(Defense):
     """
