@@ -42,7 +42,7 @@ class SmoothedModel(Model):
             eta = self.sigma * torch.randn_like(x)
             y_outputs.append(self.model(x + eta))
         y_preds = torch.stack([torch.argmax(y_output, dim=1) for y_output in y_outputs], dim=0)
-        return F.one_hot(torch.mode(y_preds, dim=0)[0], self.n_classes)
+        return F.one_hot(torch.mode(y_preds, dim=0)[0], self.n_classes).float()
 
 class RandomizedSmoothing(Defense):
     """
