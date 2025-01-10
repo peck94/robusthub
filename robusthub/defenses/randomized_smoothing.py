@@ -55,16 +55,20 @@ class RandomizedSmoothing(Defense):
     
     sigma
         Variance of the noise added to the samples.
+    
+    n_classes
+        Number of classes.
     """
 
-    def __init__(self, n_samples: int, sigma: float):
+    def __init__(self, n_samples: int, sigma: float, n_classes: int):
         super().__init__()
 
         self.n_samples = n_samples
         self.sigma = sigma
+        self.n_classes = n_classes
 
     def apply(self, model: Model) -> Model:
-        return SmoothedModel(model, self.n_samples, self.sigma)
+        return SmoothedModel(model, self.n_samples, self.sigma, self.n_classes)
 
 
 class DenoisedSmoothing(RandomizedSmoothing):
@@ -81,12 +85,15 @@ class DenoisedSmoothing(RandomizedSmoothing):
     
     sigma
         Variance of the noise added to the samples.
+    
+    n_classes
+        Number of classes.
     """
 
-    def __init__(self, denoiser: Model, n_samples: int, sigma: float):
-        super().__init__(n_samples, sigma)
+    def __init__(self, denoiser: Model, n_samples: int, sigma: float, n_classes: int):
+        super().__init__(n_samples, sigma, n_classes)
 
         self.denoiser = denoiser
 
     def apply(self, model: Model) -> Model:
-        return SmoothedModel(CompositeModel([self.denoiser, model]), self.n_samples, self.sigma)
+        return SmoothedModel(CompositeModel([self.denoiser, model]), self.n_samples, self.sigma, self.n_classes)
