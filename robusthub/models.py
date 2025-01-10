@@ -8,8 +8,66 @@ RobustHub relies on PyTorch Hub for loading models externally. Consult the `PyTo
 
 import torch
 
-type Model = torch.nn.Module
+from typing import List
 
+from abc import ABC, abstractmethod
+
+class Model(ABC):
+    """
+    Abstract base class for all models.
+    """
+
+    @abstractmethod
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass through the model.
+
+        Parameters
+        -----------
+        x
+            Input tensor.
+        
+        Returns
+        --------
+        torch.Tensor
+            Output tensor.
+        """
+        pass
+
+    def __call__(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass through the model.
+
+        Parameters
+        -----------
+        x
+            Input tensor.
+        
+        Returns
+        --------
+        torch.Tensor
+            Output tensor.
+        """
+        return self.forward(x)
+
+class CompositeModel(Model):
+    """
+    Composition of multiple models.
+
+    Parameters
+    -----------
+    models
+        List of models to compose sequentially (first to last).
+    """
+    def __init__(self, models: List[Model]):
+        super().__init__()
+        self.models = models
+    
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        y_out = x
+        for model in self.models:
+            y_out = model(y_out)
+        return y_out
 
 def load(repo: str, ident: str, **kwargs) -> Model:
     """
