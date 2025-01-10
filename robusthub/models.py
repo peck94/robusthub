@@ -1,8 +1,6 @@
 """
 Facilities for loading models.
 
-A model in RobustHub is simply an instance of :code:`torch.nn.Module`, i.e. a PyTorch model.
-
 RobustHub relies on PyTorch Hub for loading models externally. Consult the `PyTorch Hub documentation page <https://pytorch.org/docs/stable/hub.html>`_ for more information.
 """
 
@@ -87,6 +85,6 @@ def load(repo: str, ident: str, **kwargs) -> Model:
     Returns
     --------
     Model
-        A :code:`Model` instance. This is an alias of :code:`torch.nn.Module`.
+        A :code:`Model` instance.
     """
     return torch.hub.load(repo, ident, **kwargs)
