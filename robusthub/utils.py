@@ -85,6 +85,8 @@ def _get_github(github: str, force_reload: bool) -> str:
     _remove_if_exists(repo_dir)
     shutil.move(extracted_repo, repo_dir)
 
+    return repo_dir
+
 @contextlib.contextmanager
 def _add_to_sys_path(path: str):
     sys.path.insert(0, path)
