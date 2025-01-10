@@ -17,6 +17,7 @@ dependencies = [
     "torchaudio",
     "sphinx",
     "sphinx-toolbox",
+    "sphinxcontrib-bibtex",
     "pytest",
     "tqdm",
     "dash",
