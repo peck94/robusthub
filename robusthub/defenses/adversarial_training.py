@@ -38,7 +38,6 @@ class AdversarialTraining(Defense):
     device
         PyTorch device.
     """
-
     def __init__(self,
                  training_data: torch.utils.data.DataLoader,
                  validation_data: torch.utils.data.DataLoader,

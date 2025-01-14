@@ -56,8 +56,8 @@ class AutoProjectedGradientDescent(Attack):
             loss.backward()
 
             g = samples.grad
-            z = self.threat.project(samples + eta * g)
-            x_tilde = self.threat.project(samples + self.alpha * (z - samples) + (1 - self.alpha) * (samples - prev_samples))
+            z = self.threat.project(x_data, samples + eta * g)
+            x_tilde = self.threat.project(x_data, samples + self.alpha * (z - samples) + (1 - self.alpha) * (samples - prev_samples))
 
             y_pred = model(x_tilde)
             loss = F.nll_loss(y_pred, y_data)
