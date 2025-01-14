@@ -10,13 +10,13 @@ import torch
 from robusthub.threats import ThreatModel
 from robusthub.models import Model
 from robusthub.defenses import Defense
-from robusthub.attacks import ProjectedGradientDescent
+from robusthub.attacks import Attack, ProjectedGradientDescent
 
 from tqdm import tqdm
 
 class AdversarialTraining(Defense):
     """
-    Basic adversarial training defense as proposed by :cite:`madry2017defense`. It uses the :py:class:`robusthub.attacks.pgd.ProjectedGradientDescent` attack.
+    Basic adversarial training defense as proposed by :cite:`madry2017defense`.
 
     Parameters
     -----------
@@ -30,13 +30,10 @@ class AdversarialTraining(Defense):
         Threat model of the attacks.
     
     nb_epochs
-        Number of training epochs.
+        Number of epochs of training.
     
-    nb_iterations
-        Number of PGD iterations.
-    
-    step_size
-        PGD step size.
+    attack
+        Adversarial attack to use for training. Defaults to :py:class:`robusthub.attacks.pgd.ProjectedGradientDescent`.
 
     device
         PyTorch device.
@@ -47,18 +44,19 @@ class AdversarialTraining(Defense):
                  validation_data: torch.utils.data.DataLoader,
                  threat_model: ThreatModel,
                  nb_epochs: int = 100,
-                 nb_iterations: int = 100,
-                 step_size: float = .01,
+                 attack: Attack | None = None,
                  device: torch.device = torch.device('cuda')):
         super().__init__()
 
         self.training_data = training_data
         self.validation_data = validation_data
-        self.nb_epochs = nb_epochs
-        self.nb_iterations = nb_iterations
+        self.attack = attack
         self.threat = threat_model
-        self.step_size = step_size
+        self.nb_epochs = nb_epochs
         self.device = device
+
+        if attack is None:
+            self.attack = ProjectedGradientDescent(threat_model, device=device)
 
     def apply(self, model: Model) -> Model:
         """
@@ -76,13 +74,12 @@ class AdversarialTraining(Defense):
         """
         optimizer = torch.optim.Adam(model.parameters())
         criterion = torch.nn.CrossEntropyLoss()
-        attack = ProjectedGradientDescent(self.threat, self.nb_iterations, self.step_size, self.device)
         for epoch in range(self.nb_epochs):
             progbar = tqdm(self.training_data, desc=f'Epoch {epoch + 1} / {self.nb_epochs}')
             for batch in progbar:
                 x_data, y_data = batch
                 x_data, y_data = x_data.to(self.device), y_data.to(self.device)
-                x_tilde = attack.apply(model, x_data, y_data)
+                x_tilde = self.attack.apply(model, x_data, y_data)
 
                 optimizer.zero_grad()
                 y_pred = model(x_tilde)
