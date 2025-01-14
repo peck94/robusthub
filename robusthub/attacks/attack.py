@@ -87,3 +87,6 @@ def load(repo: str, ident: str, source: str = 'github', force_reload: bool = Fal
     assert isinstance(attack, Attack), 'Not a valid attack'
 
     return attack
+
+def _grad_check(x: torch.Tensor):
+    assert x.requires_grad and x.grad_fn is not None, 'This attack can only be applied to differentiable models.'

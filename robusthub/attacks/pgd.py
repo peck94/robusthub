@@ -3,7 +3,7 @@ import torch.nn.functional as F
 
 from robusthub.models import Model
 from robusthub.threats import ThreatModel
-from robusthub.attacks.attack import Attack
+from robusthub.attacks.attack import Attack, _grad_check
 
 class ProjectedGradientDescent(Attack):
     """
@@ -27,6 +27,7 @@ class ProjectedGradientDescent(Attack):
 
             y_pred = model(samples)
             loss = F.nll_loss(y_pred, y_data)
+            _grad_check(loss)
             loss.backward()
 
             deltas = torch.sign(samples.grad)

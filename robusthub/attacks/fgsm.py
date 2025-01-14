@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 
 from robusthub.models import Model
-from robusthub.attacks.attack import Attack
+from robusthub.attacks.attack import Attack, _grad_check
 from robusthub.threats import ThreatModel
 
 class FastGradientSignMethod(Attack):
@@ -17,6 +17,7 @@ class FastGradientSignMethod(Attack):
 
         y_pred = model(samples)
         loss = F.nll_loss(y_pred, y_data)
+        _grad_check(loss)
         loss.backward()
 
         x_tilde = samples + torch.sign(samples.grad)
