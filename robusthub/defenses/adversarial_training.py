@@ -34,6 +34,9 @@ class AdversarialTraining(Defense):
     
     nb_iterations
         Number of PGD iterations.
+    
+    step_size
+        PGD step size.
 
     device
         PyTorch device.
@@ -45,6 +48,7 @@ class AdversarialTraining(Defense):
                  threat_model: ThreatModel,
                  nb_epochs: int = 100,
                  nb_iterations: int = 100,
+                 step_size: float = .01,
                  device: torch.device = torch.device('cuda')):
         super().__init__()
 
@@ -53,6 +57,7 @@ class AdversarialTraining(Defense):
         self.nb_epochs = nb_epochs
         self.nb_iterations = nb_iterations
         self.threat = threat_model
+        self.step_size = step_size
         self.device = device
 
     def apply(self, model: Model) -> Model:
@@ -71,7 +76,7 @@ class AdversarialTraining(Defense):
         """
         optimizer = torch.optim.Adam(model.parameters())
         criterion = torch.nn.CrossEntropyLoss()
-        attack = ProjectedGradientDescent(self.threat, self.nb_iterations, self.device)
+        attack = ProjectedGradientDescent(self.threat, self.nb_iterations, self.step_size, self.device)
         for epoch in range(self.nb_epochs):
             progbar = tqdm(self.training_data, desc=f'Epoch {epoch + 1} / {self.nb_epochs}')
             for batch in progbar:
