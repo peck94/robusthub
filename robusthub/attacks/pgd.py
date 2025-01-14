@@ -23,6 +23,8 @@ class ProjectedGradientDescent(Attack):
     def apply(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> torch.Tensor:
         noise = torch.randn(x_data.shape).to(self.device)
         x_tilde = self.threat.project(x_data, x_data + noise)
+        best_loss = -torch.inf
+        x_best = torch.zeros_like(x_data)
 
         for _ in range(self.iterations):
             samples = x_tilde.clone().detach().requires_grad_()
@@ -34,7 +36,13 @@ class ProjectedGradientDescent(Attack):
 
             deltas = self.alpha * torch.sign(samples.grad)
             x_tilde = self.threat.project(x_data, x_tilde + deltas)
+
+            y_pred = model(x_tilde)
+            loss = F.nll_loss(y_pred, y_data)
+            if loss > best_loss:
+                best_loss = loss.item()
+                x_best = x_tilde.clone()
             
             samples.grad = None
 
-        return x_tilde
+        return x_best
