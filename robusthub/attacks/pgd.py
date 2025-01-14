@@ -8,6 +8,20 @@ from robusthub.attacks.attack import Attack, _grad_check
 class ProjectedGradientDescent(Attack):
     """
     The projected gradient descent attack popularized by :cite:`madry2017attack`.
+
+    Parameters
+    -----------
+    threat_model
+        The threat model to use.
+    
+    iterations
+        Number of iterations of optimization.
+    
+    alpha
+        Per-iteration step size.
+    
+    device
+        Device to use.
     """
     def __init__(self,
                  threat_model: ThreatModel,

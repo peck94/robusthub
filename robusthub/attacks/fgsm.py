@@ -8,6 +8,11 @@ from robusthub.threats import ThreatModel
 class FastGradientSignMethod(Attack):
     """
     The fast gradient sign attack proposed by :cite:`goodfellow2014explaining`.
+
+    Parameters
+    -----------
+    threat_model
+        The threat model to use.
     """
     def __init__(self, threat_model: ThreatModel):
         super().__init__(threat_model)

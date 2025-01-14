@@ -10,6 +10,9 @@ Attacks
 .. automodule:: robusthub.attacks.pgd
    :members:
 
+.. automodule:: robusthub.attacks.apgd
+   :members:
+
 References
 -----------
 
