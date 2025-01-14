@@ -12,10 +12,12 @@ class ProjectedGradientDescent(Attack):
     def __init__(self,
                  threat_model: ThreatModel,
                  iterations: int = 100,
+                 alpha: float = .01,
                  device: torch.device = torch.device('cuda')):
         super().__init__(threat_model)
 
         self.iterations = iterations
+        self.alpha = alpha
         self.device = device
     
     def apply(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> torch.Tensor:
@@ -30,7 +32,7 @@ class ProjectedGradientDescent(Attack):
             _grad_check(loss)
             loss.backward()
 
-            deltas = torch.sign(samples.grad)
+            deltas = self.alpha * torch.sign(samples.grad)
             x_tilde = self.threat.project(x_data, x_tilde + deltas)
             
             samples.grad = None
