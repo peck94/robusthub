@@ -6,7 +6,7 @@ RobustHub relies on PyTorch Hub for loading models externally. Consult the `PyTo
 
 import torch
 
-from typing import List
+from typing import List, Iterable
 
 from abc import ABC, abstractmethod
 
@@ -29,6 +29,18 @@ class Model(ABC):
         --------
         torch.Tensor
             Output tensor.
+        """
+        pass
+
+    @abstractmethod
+    def parameters(self) -> Iterable:
+        """
+        Return the model parameters.
+
+        Returns
+        --------
+        Iterable
+            Iterable of model parameters.
         """
         pass
 
