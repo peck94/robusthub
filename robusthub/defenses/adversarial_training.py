@@ -7,6 +7,8 @@ Catalog of adversarial training defenses.
 
 import torch
 
+from typing import Callable
+
 from robusthub.threats import ThreatModel
 from robusthub.models import Model
 from robusthub.defenses import Defense
@@ -34,6 +36,12 @@ class AdversarialTraining(Defense):
     
     attack
         Adversarial attack to use for training. Defaults to :py:class:`robusthub.attacks.pgd.ProjectedGradientDescent`.
+    
+    optimizer
+        Optimizer to use for training.
+    
+    criterion
+        Loss function to use for training.
 
     device
         PyTorch device.
@@ -44,6 +52,8 @@ class AdversarialTraining(Defense):
                  threat_model: ThreatModel,
                  nb_epochs: int = 100,
                  attack: Attack | None = None,
+                 optimizer: torch.optim.Optimizer = torch.optim.Adam,
+                 criterion: Callable = torch.nn.CrossEntropyLoss(),
                  device: torch.device = torch.device('cuda')):
         super().__init__()
 
@@ -52,6 +62,8 @@ class AdversarialTraining(Defense):
         self.attack = attack
         self.threat = threat_model
         self.nb_epochs = nb_epochs
+        self.optimizer = optimizer
+        self.criterion = criterion
         self.device = device
 
         if attack is None:
@@ -71,8 +83,7 @@ class AdversarialTraining(Defense):
         Model
             Adversarially trained model.
         """
-        optimizer = torch.optim.Adam(model.parameters())
-        criterion = torch.nn.CrossEntropyLoss()
+        optimizer = self.optimizer(model.parameters())
         for epoch in range(self.nb_epochs):
             progbar = tqdm(self.training_data, desc=f'Epoch {epoch + 1} / {self.nb_epochs}')
             for batch in progbar:
@@ -82,7 +93,7 @@ class AdversarialTraining(Defense):
 
                 optimizer.zero_grad()
                 y_pred = model(x_tilde)
-                loss = criterion(y_pred, y_data)
+                loss = self.criterion(y_pred, y_data)
                 loss.backward()
                 optimizer.step()
 
