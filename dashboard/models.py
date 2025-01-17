@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 
-from typing import Optional
+from typing import Optional, List
 
 class Base(orm.DeclarativeBase):
     pass
@@ -72,3 +72,24 @@ class Benchmark(Base):
 
     def __repr__(self) -> str:
         return f'Benchmark(id={self.id}, model={self.model_id}, attack={self.attack_id}, defense={self.defense_id}, results={self.results})'
+
+usecases_benchmarks_table = sa.Table(
+    'usecases_benchmarks',
+    Base.metadata,
+    sa.Column('usecase_id', sa.ForeignKey('usecases.id')),
+    sa.Column('benchmark_id', sa.ForeignKey('benchmarks.id')),
+)
+
+class Usecase(Base):
+    __tablename__ = 'usecases'
+
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+
+    title: orm.Mapped[str] = orm.mapped_column(sa.Text())
+    short_description: orm.Mapped[str] = orm.mapped_column(sa.Text())
+    full_description: orm.Mapped[str] = orm.mapped_column(sa.Text())
+
+    benchmarks: orm.Mapped[List[Benchmark]] = orm.relationship(secondary=usecases_benchmarks_table, lazy='joined')
+
+    def __repr__(self) -> str:
+        return f'Usecase(id={self.id}, title={self.title}, short_description={self.short_description}, full_description={self.full_description})'

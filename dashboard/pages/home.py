@@ -56,6 +56,19 @@ jumbotron = html.Div(
     className="p-3 bg-body-secondary rounded-3",
 )
 
+usecase_title = html.H2('Usecases')
+usecases = adapter.load_usecases()
+usecase_head = html.Thead(html.Tr([
+    html.Th('Name'), html.Th('Description')
+]))
+usecase_list = [
+    html.Tr([
+        html.Td(dcc.Link(usecase.title, href=f'/usecase/{usecase.id}')),
+        html.Td(usecase.short_description)
+    ]) for usecase in usecases
+]
+usecase_table = dbc.Table([usecase_head] + usecase_list, bordered=True)
+
 model_title = html.H2('Model catalog')
 models = adapter.load_models()
 model_table = create_catalog(models, 'model')
@@ -83,6 +96,12 @@ datasets_table = dbc.Table([
 layout = html.Div(
     [
         jumbotron,
+        dbc.Row(
+            dbc.Col(usecase_title)
+        ),
+        dbc.Row(
+            dbc.Col(usecase_table)
+        ),
         dbc.Row(
             dbc.Col(model_title)
         ),

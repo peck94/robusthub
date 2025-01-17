@@ -3,7 +3,7 @@ import sqlalchemy.orm as orm
 
 from typing import List, Optional
 
-from models import Base, Model, Attack, Defense, Benchmark, Dataset
+from models import Base, Model, Attack, Defense, Benchmark, Dataset, Usecase
 
 class Adapter:
     def __init__(self, url: str):
@@ -27,6 +27,9 @@ class Adapter:
         with orm.Session(self.engine) as session:
             item = session.scalars(stmt).first()
         return item
+    
+    def load_usecases(self) -> List[Usecase]:
+        return self._load_table(Usecase)
 
     def load_models(self) -> List[Model]:
         return self._load_table(Model)
