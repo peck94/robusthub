@@ -12,7 +12,7 @@ class Adapter:
     def _load_table(self, table: sa.Table) -> List:
         stmt = sa.select(table)
         with orm.Session(self.engine) as session:
-            rows = list(session.scalars(stmt))
+            rows = list(session.scalars(stmt).unique())
         return rows
     
     def _get_table(self, table: sa.Table, id: int) -> Base:
@@ -30,6 +30,9 @@ class Adapter:
     
     def load_usecases(self) -> List[Usecase]:
         return self._load_table(Usecase)
+    
+    def get_usecase(self, id: int) -> Usecase:
+        return self._get_table(Usecase, id)
 
     def load_models(self) -> List[Model]:
         return self._load_table(Model)
