@@ -4,6 +4,7 @@ from dash import html, dcc
 import dash_bootstrap_components as dbc
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
+app.title = 'RobustHub'
 
 app.layout = html.Div(
     [
