@@ -19,7 +19,9 @@ from abc import ABC, abstractmethod
 
 from robusthub.models import Model
 
-from skimage.metrics import structural_similarity, normalized_root_mse, peak_signal_noise_ratio
+from skimage.metrics import structural_similarity, peak_signal_noise_ratio
+
+from sklearn.metrics import f1_score, roc_auc_score, roc_curve
 
 class Metric(ABC):
     """
@@ -118,3 +120,46 @@ class PSNR(Metric):
         return peak_signal_noise_ratio(y_data.cpu().detach().numpy(),
                                        y_pred.cpu().detach().numpy(),
                                        data_range=r.item())
+
+class F1(Metric):
+    """
+    The F1 score.
+    """
+    def __init__(self):
+        super().__init__('F1')
+    
+    def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
+        y_pred = model(x_data)
+        labels = y_pred.argmax(dim=1).cpu().detach().numpy()
+        return f1_score(y_data.cpu().detach().numpy(), labels)
+
+class AUC(Metric):
+    """
+    The AUC score.
+    """
+    def __init__(self):
+        super().__init__('F1')
+    
+    def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
+        y_pred = model(x_data)
+        return roc_auc_score(y_data.cpu().detach().numpy(), y_pred.cpu().detach().numpy())
+
+class TPR(Metric):
+    """
+    The true positive rate at a given false positive rate threshold.
+
+    Parameters
+    -----------
+    fpr
+        The maximum false positive rate.
+    """
+    def __init__(self, fpr=.1):
+        super().__init__(f'TPR@FPR={fpr:.2%}')
+        self.fpr = fpr
+    
+    def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
+        y_pred = model(x_data)
+        fpr, tpr, _ = roc_curve(y_data.cpu().detach().numpy(), y_pred.cpu().detach().numpy())
+
+        idx = max(0, np.searchsorted(fpr, self.fpr, side='right') - 1)
+        return tpr[idx]
