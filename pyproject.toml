@@ -26,7 +26,8 @@ dependencies = [
     "alembic",
     "humanize",
     "scikit-image",
-    "scikit-learn"
+    "scikit-learn",
+    "pyinstrument"
 ]
 
 [tool.pytest.ini_options]
