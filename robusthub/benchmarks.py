@@ -16,7 +16,7 @@ from typing import List, NamedTuple
 
 import torch
 
-import cProfile, pstats
+import pyinstrument
 
 import numpy as np
 
@@ -88,43 +88,40 @@ class Benchmark:
             'defense': {},
             'metrics': {}
         }
+        model = model.to(self.device)
+        profiler = pyinstrument.Profiler()
 
         # Profile defense
         print('[*] Profiling defense')
-        with cProfile.Profile() as pr:
+        torch.cuda.reset_peak_memory_stats(self.device)
+        with profiler:
             robust_model = defense.apply(model)
-            pr.create_stats()
-        ps = pstats.Stats(pr)
-        profile = ps.get_stats_profile()
-        runtime = max([profile.func_profiles[fp].cumtime for fp in profile.func_profiles])
         result['defense'] = {
-            'memory': 0,
-            'runtime': runtime
+            'memory': torch.cuda.max_memory_allocated(self.device),
+            'runtime': profiler.last_session.cpu_time
         }
+        profiler.reset()
 
         # Profile model inference
-        print('[*] Profiling runtime and memory usage (standard model)')
-        with cProfile.Profile() as pr:
+        print('[*] Profiling standard model')
+        torch.cuda.reset_peak_memory_stats(self.device)
+        with profiler:
             for x_data, _ in data_loader:
                 model(x_data.to(self.device))
-            pr.create_stats()
-        ps = pstats.Stats(pr)
-        runtime = max([profile.func_profiles[fp].cumtime for fp in profile.func_profiles])
         result['model']['standard'] = {
-            'memory': 0,
-            'runtime': runtime
+            'memory': torch.cuda.max_memory_allocated(self.device),
+            'runtime': profiler.last_session.cpu_time
         }
+        profiler.reset()
 
-        print('[*] Profiling runtime and memory usage (robust model)')
-        with cProfile.Profile() as pr:
+        print('[*] Profiling robust model')
+        torch.cuda.reset_peak_memory_stats(self.device)
+        with profiler:
             for x_data, _ in data_loader:
                 robust_model(x_data.to(self.device))
-            pr.create_stats()
-        ps = pstats.Stats(pr)
-        runtime = max([profile.func_profiles[fp].cumtime for fp in profile.func_profiles])
         result['model']['robust'] = {
-            'memory': 0,
-            'runtime': runtime
+            'memory': torch.cuda.max_memory_allocated(self.device),
+            'runtime': profiler.last_session.cpu_time
         }
 
         # Measure task-specific metrics

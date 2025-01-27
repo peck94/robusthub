@@ -16,9 +16,8 @@ class Adapter:
         return rows
     
     def _get_table(self, table: sa.Table, id: int) -> Base:
-        stmt = sa.select(table).where(sa.text(f'id = {id}'))
         with orm.Session(self.engine) as session:
-            item = session.scalars(stmt).first()
+            item = session.get(table, id)
         return item
     
     def _find_table(self, table: sa.Table, **kwargs) -> Optional[Base]:
@@ -68,7 +67,14 @@ class Adapter:
             items = list(session.scalars(stmt))
         return items
 
-    def save_benchmark(self, model: Model, dataset: Dataset, threat: str, defense: Defense, attack: Attack, results: str):
+    def save_benchmark(self,
+                       model: Model,
+                       dataset: Dataset,
+                       threat: str,
+                       defense: Defense,
+                       attack: Attack,
+                       results: str,
+                       usecase: Optional[Usecase] = None):
         model = self._find_table(Model,
                                  name=model.name,
                                  repo=model.repo,
@@ -95,4 +101,9 @@ class Adapter:
                 results=results
             )
             sess.add(benchmark)
+
+            if usecase:
+                usecase = sess.get(Usecase, usecase.id)
+                usecase.benchmarks.append(benchmark)
+
             sess.commit()

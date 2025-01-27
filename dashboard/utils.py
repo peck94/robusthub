@@ -20,15 +20,15 @@ def print_results(results_str: str):
         ]),
         html.Tr([
             html.Td('Runtime'),
-            html.Td(results['model']['standard']['runtime']),
-            html.Td(results['defense']['runtime']),
-            html.Td(results['model']['robust']['runtime'])
+            html.Td(f"{results['model']['standard']['runtime']:.2f}"),
+            html.Td(f"{results['defense']['runtime']:.2f}"),
+            html.Td(f"{results['model']['robust']['runtime']:.2f}")
         ]),
         html.Tr([
             html.Td('Memory'),
-            html.Td(results['model']['standard']['memory']),
-            html.Td(results['defense']['memory']),
-            html.Td(results['model']['robust']['memory'])
+            html.Td(humanize.naturalsize(results['model']['standard']['memory'])),
+            html.Td(humanize.naturalsize(results['defense']['memory'])),
+            html.Td(humanize.naturalsize(results['model']['robust']['memory']))
         ]),
         html.Tr([
             html.Th('Metric'),
