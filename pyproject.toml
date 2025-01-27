@@ -25,7 +25,8 @@ dependencies = [
     "pandas",
     "alembic",
     "humanize",
-    "scikit-image"
+    "scikit-image",
+    "scikit-learn"
 ]
 
 [tool.pytest.ini_options]
