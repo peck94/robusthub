@@ -1,7 +1,10 @@
-from robusthub.defenses import Defense, AdversarialTraining, RandomizedSmoothing
+from robusthub.defenses import Defense, AdversarialTraining, RandomizedSmoothing, Vanilla
 from robusthub.attacks import Attack, ProjectedGradientDescent, FastGradientSignMethod
 
 dependencies = []
+
+def vanilla_defense(**kwargs) -> Defense:
+    return Vanilla(**kwargs)
 
 def adversarial_training(**kwargs) -> Defense:
     return AdversarialTraining(**kwargs)
