@@ -13,9 +13,15 @@ class FastGradientSignMethod(Attack):
     -----------
     threat_model
         The threat model to use.
+    
+    eps
+        Multiplier for the gradient sign vector.
     """
-    def __init__(self, threat_model: ThreatModel):
+    def __init__(self,
+                 threat_model: ThreatModel,
+                 eps: float = 1):
         super().__init__(threat_model)
+        self.eps = eps
     
     def apply(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> torch.Tensor:
         samples = x_data.clone().detach().requires_grad_()
@@ -25,5 +31,5 @@ class FastGradientSignMethod(Attack):
         _grad_check(loss)
         loss.backward()
 
-        x_tilde = samples + torch.sign(samples.grad)
+        x_tilde = samples + self.eps * torch.sign(samples.grad)
         return self.threat.project(x_data, x_tilde)
