@@ -67,6 +67,18 @@ class MSE(Metric):
         y_pred = model(x_data)
         return torch.mean(torch.square(y_pred - y_data)).item()
 
+class NMSE(Metric):
+    """
+    The normalized mean squared error between the model predictions and the ground truth.
+    """
+    def __init__(self):
+        super().__init__('NMSE')
+    
+    def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
+        y_pred = model(x_data)
+        mse = torch.mean(torch.square(y_pred - y_data))
+        return mse / torch.mean(torch.square(y_data))
+
 class MAE(Metric):
     """
     The mean absolute error between the model predictions and the ground truth.
