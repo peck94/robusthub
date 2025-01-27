@@ -5,7 +5,7 @@ With the rise of deep learning in computer vision, researchers have naturally at
 ### Metrics
 
 * **SSIM.** The [Structural Similarity Index Measure](https://en.wikipedia.org/wiki/Structural_similarity_index_measure) (SSIM) is often used to train and evaluate generative models for image restoration.
-* **MSE.** The Mean Squared Error (MSE) is simply the squared $L_2$ distance between the reference image and the reconstruction.
+* **NMSE.** The Normalized Mean Squared Error (NMSE) is simply a normalized version of the squared $L_2$ distance between the reference image and the reconstruction.
 * **PSNR.** [Peak Signal-to-Noise Ratio](https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio) (PSNR) is also a common metric to assess the fidelity of image reconstructions.
 
 ### Threat models

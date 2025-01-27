@@ -13,9 +13,13 @@ Task-agnostic metrics are built into all benchmarks. Consult our :doc:`Benchmark
 
 import torch
 
+import numpy as np
+
 from abc import ABC, abstractmethod
 
 from robusthub.models import Model
+
+from skimage.metrics import structural_similarity, normalized_root_mse, peak_signal_noise_ratio
 
 class Metric(ABC):
     """
@@ -43,7 +47,7 @@ class Metric(ABC):
 
 class Accuracy(Metric):
     """
-    *Accuracy* is the proportion of model predictions that match the given ground truth.
+    The proportion of model predictions that match the given ground truth.
     """
     def __init__(self):
         super().__init__('Accuracy')
@@ -54,7 +58,7 @@ class Accuracy(Metric):
 
 class MSE(Metric):
     """
-    *MSE* is the mean squared error between the model predictions and the ground truth.
+    The mean squared error between the model predictions and the ground truth.
     """
     def __init__(self):
         super().__init__('MSE')
@@ -65,7 +69,7 @@ class MSE(Metric):
 
 class MAE(Metric):
     """
-    *MAE* is the mean absolute error between the model predictions and the ground truth.
+    The mean absolute error between the model predictions and the ground truth.
     """
     def __init__(self):
         super().__init__('MAE')
@@ -73,3 +77,32 @@ class MAE(Metric):
     def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
         y_pred = model(x_data)
         return torch.mean(torch.square(y_pred - y_data)).item()
+
+class SSIM(Metric):
+    """
+    The structural similarity index measure.
+    """
+    def __init__(self):
+        super().__init__('SSIM')
+    
+    def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
+        y_pred = model(x_data)
+        r = x_data.max() - x_data.min()
+
+        im1 = y_data.cpu().detach().numpy()
+        im2 = y_pred.cpu().detach().numpy()
+        return structural_similarity(im1, im2, data_range=r.item(), win_size=3)
+
+class PSNR(Metric):
+    """
+    The peak signal-to-noise ratio.
+    """
+    def __init__(self):
+        super().__init__('PSNR')
+    
+    def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
+        y_pred = model(x_data)
+        r = x_data.max() - x_data.min()
+        return peak_signal_noise_ratio(y_data.cpu().detach().numpy(),
+                                       y_pred.cpu().detach().numpy(),
+                                       data_range=r.item())

@@ -24,7 +24,8 @@ dependencies = [
     "dash-bootstrap-components",
     "pandas",
     "alembic",
-    "humanize"
+    "humanize",
+    "scikit-image"
 ]
 
 [tool.pytest.ini_options]
