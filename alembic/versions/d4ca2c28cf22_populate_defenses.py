@@ -19,7 +19,8 @@ depends_on: Union[str, Sequence[str], None] = None
 
 defenses = [
     {'name': 'adversarial_training', 'title': 'Adversarial training', 'repo': 'peck94/robusthub', 'arguments': '{}'},
-    {'name': 'randomized_smoothing', 'title': 'Randomized smoothing', 'repo': 'peck94/robusthub', 'arguments': '{}'}
+    {'name': 'randomized_smoothing', 'title': 'Randomized smoothing', 'repo': 'peck94/robusthub', 'arguments': '{}'},
+    {'name': 'vanilla_defense', 'title': 'Vanilla', 'repo': 'peck94/robusthub', 'arguments': '{}'}
 ]
 
 def upgrade() -> None:
