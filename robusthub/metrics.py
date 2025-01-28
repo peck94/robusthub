@@ -156,6 +156,8 @@ class TPR(Metric):
     def __init__(self, fpr=.1):
         super().__init__(f'TPR@FPR={fpr:.2%}')
         self.fpr = fpr
+
+        assert 0 <= fpr <= 1, 'FPR must be between 0 and 1'
     
     def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
         y_pred = model(x_data)
