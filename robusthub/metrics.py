@@ -31,9 +31,13 @@ class Metric(ABC):
     -----------
     name
         Name of the metric.
+    
+    bounds
+        Lower and upper bounds of the metric.
     """
-    def __init__(self, name: str):
+    def __init__(self, name: str, bounds: tuple[float, float]):
         self.name = name
+        self.bounds = bounds
 
     @abstractmethod
     def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
@@ -52,7 +56,7 @@ class Accuracy(Metric):
     The proportion of model predictions that match the given ground truth.
     """
     def __init__(self):
-        super().__init__('Accuracy')
+        super().__init__('Accuracy', (0, 1))
     
     def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
         y_pred = model(x_data)
@@ -63,7 +67,7 @@ class MSE(Metric):
     The mean squared error between the model predictions and the ground truth.
     """
     def __init__(self):
-        super().__init__('MSE')
+        super().__init__('MSE', (0, np.inf))
     
     def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
         y_pred = model(x_data)
@@ -74,7 +78,7 @@ class NMSE(Metric):
     The normalized mean squared error between the model predictions and the ground truth.
     """
     def __init__(self):
-        super().__init__('NMSE')
+        super().__init__('NMSE', (0, np.inf))
     
     def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
         y_pred = model(x_data)
@@ -86,7 +90,7 @@ class MAE(Metric):
     The mean absolute error between the model predictions and the ground truth.
     """
     def __init__(self):
-        super().__init__('MAE')
+        super().__init__('MAE', (0, np.inf))
     
     def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
         y_pred = model(x_data)
@@ -97,7 +101,7 @@ class SSIM(Metric):
     The structural similarity index measure.
     """
     def __init__(self):
-        super().__init__('SSIM')
+        super().__init__('SSIM', (0, 1))
     
     def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
         y_pred = model(x_data)
@@ -112,7 +116,7 @@ class PSNR(Metric):
     The peak signal-to-noise ratio.
     """
     def __init__(self):
-        super().__init__('PSNR')
+        super().__init__('PSNR', (0, np.inf))
     
     def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
         y_pred = model(x_data)
@@ -126,7 +130,7 @@ class F1(Metric):
     The F1 score.
     """
     def __init__(self):
-        super().__init__('F1')
+        super().__init__('F1', (0, 1))
     
     def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
         y_pred = model(x_data)
@@ -138,7 +142,7 @@ class AUC(Metric):
     The AUC score.
     """
     def __init__(self):
-        super().__init__('F1')
+        super().__init__('AUC', (0, 1))
     
     def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
         y_pred = model(x_data)
@@ -154,7 +158,7 @@ class TPR(Metric):
         The maximum false positive rate.
     """
     def __init__(self, fpr=.1):
-        super().__init__(f'TPR@FPR={fpr:.2%}')
+        super().__init__(f'TPR@FPR={fpr:.2%}', (0, 1))
         self.fpr = fpr
 
         assert 0 <= fpr <= 1, 'FPR must be between 0 and 1'

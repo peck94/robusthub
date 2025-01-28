@@ -34,14 +34,14 @@ class Value(NamedTuple):
     #: Mean of the metric values over the data set.
     mean: float
 
-    #: Standard deviation of the values over the data set.
-    std: float
+    #: Standard error of the mean of values over the data set.
+    err: float
 
     def __repr__(self):
         """
         String representation of this value.
         """
-        return f"{{'mean': '{self.mean}', 'std': {self.std}}}"
+        return f"{{'mean': '{self.mean}', 'err': {self.err}}}"
 
 class Benchmark:
     """
@@ -139,8 +139,9 @@ class Benchmark:
                 standard_values.append(standard_value)
                 robust_values.append(robust_value)
             result['metrics'][metric.name] = {
-                'standard': Value(mean=np.mean(standard_values), std=np.std(standard_values)),
-                'robust': Value(mean=np.mean(robust_values), std=np.std(robust_values))
+                'standard': Value(mean=np.mean(standard_values), err=1.96*np.std(standard_values)/np.sqrt(len(standard_values))),
+                'robust': Value(mean=np.mean(robust_values), err=1.96*np.std(robust_values)/np.sqrt(len(robust_values))),
+                'bounds': metric.bounds
             }
 
         return result
