@@ -40,11 +40,14 @@ class Simba(Attack):
         bs = x_data.shape[0]
         for _ in range(self.iterations):
             qs = 2 * self.eps * torch.rand_like(deltas) - self.eps
-            if self.basis == 'dct':
-                qs = torch.fft.ifft2(qs).real
-            
+            if self.basis == 'standard':
+                x_tilde = x_data + deltas + qs
+            else:
+                x_tilde = torch.fft.ifft2(
+                    torch.fft.fft2(x_data + deltas) + qs
+                ).real
+            x_tilde = self.threat.project(x_data, x_tilde)
             x_old = self.threat.project(x_data, x_data + deltas)
-            x_tilde = self.threat.project(x_data, x_data + deltas + qs)
 
             y_pred_old = model(x_old)
             y_pred_new = model(x_tilde)
