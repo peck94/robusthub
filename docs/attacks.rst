@@ -4,6 +4,9 @@ Attacks
 .. automodule:: robusthub.attacks.attack
    :members:
 
+White-box attacks
+-----------------
+
 .. automodule:: robusthub.attacks.fgsm
    :members:
 
@@ -11,6 +14,12 @@ Attacks
    :members:
 
 .. automodule:: robusthub.attacks.apgd
+   :members:
+
+Black-box attacks
+-----------------
+
+.. automodule:: robusthub.attacks.simba
    :members:
 
 References
