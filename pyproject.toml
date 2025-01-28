@@ -15,6 +15,7 @@ dependencies = [
     "torch",
     "torchvision",
     "torchaudio",
+    "SQLAlchemy",
     "sphinx",
     "sphinx-toolbox",
     "sphinxcontrib-bibtex",
