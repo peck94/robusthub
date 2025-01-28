@@ -8,6 +8,8 @@ import torch
 
 import numpy as np
 
+import warnings
+
 from abc import ABC, abstractmethod
 
 from typing import List
@@ -86,6 +88,8 @@ class Bounds(ThreatModel):
         """
         Clip the values of the data to the specified range.
         """
+        if x_orig.min() < self.lower or x_orig.max() > self.upper:
+            warnings.warn(f'Threat model bounds ({self.lower}, {self.upper}) do not agree with data bounds ({x_orig.min()}, {x_orig.max()})')
         return torch.clamp(x_tilde, self.lower, self.upper)
     
     def __repr__(self) -> str:
