@@ -33,7 +33,7 @@ def layout(defense_id=0, **kwargs):
                 html.Td(b.threat_model),
                 html.Td(b.attack.title),
                 html.Td(print_results(b.results))
-            ])
+            ], className='benchmarks_row')
             for b in benchmarks
         ])
 
