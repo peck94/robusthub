@@ -18,8 +18,10 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 attacks = [
+    {'name': 'fgsm', 'title': 'Fast gradient sign', 'repo': 'peck94/robusthub', 'arguments': '{}'},
     {'name': 'pgd', 'title': 'Projected gradient descent', 'repo': 'peck94/robusthub', 'arguments': '{}'},
-    {'name': 'fgsm', 'title': 'Fast gradient sign', 'repo': 'peck94/robusthub', 'arguments': '{}'}
+    {'name': 'apgd', 'title': 'Automatic projected gradient descent', 'repo': 'peck94/robusthub', 'arguments': '{}'},
+    {'name': 'simba', 'title': 'Simple black-box attack', 'repo': 'peck94/robusthub', 'arguments': '{}'}
 ]
 
 def upgrade() -> None:
