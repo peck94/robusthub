@@ -6,8 +6,13 @@ import numpy as np
 
 from dash import html
 
+from models import Benchmark
+
 def to_ratio(a: float, b: float) -> float:
     return np.log(b / a) / np.log(10)
+
+def interpret_results(benchmark: Benchmark) -> dict:
+    return ast.literal_eval(benchmark.results)
 
 def print_results(results_str: str):
     results = ast.literal_eval(results_str)
