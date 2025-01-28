@@ -46,7 +46,7 @@ def get_summaries(benchmarks: List[Benchmark]) -> Figure:
             plots[metric]['robust_err'].append(values['robust']['err'])
 
     fig = make_subplots(rows=len(plots), cols=1, subplot_titles=sorted(plots.keys()))
-    for i, metric in enumerate(sorted(plots.keys())):
+    for metric in sorted(plots.keys()):
         data = plots[metric]
         fig.add_trace(
             go.Scatter(
@@ -75,8 +75,7 @@ def layout(usecase_id=0, **kwargs):
                 html.Th('Defense'),
                 html.Th('Attack'),
                 html.Th('Results')
-        ]))
-            ] + [html.Tr([
+            ]))] + [html.Tr([
                 html.Td(b.dataset.title),
                 html.Td(b.model.title),
                 html.Td(b.threat_model),
