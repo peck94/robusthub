@@ -16,14 +16,13 @@ from typing import List, NamedTuple
 
 import torch
 
-import pyinstrument
-
 import numpy as np
 
 from robusthub import models
 from robusthub import defenses
 from robusthub import attacks
 from robusthub import metrics
+from robusthub.profiler import Profiler
 
 
 class Value(NamedTuple):
@@ -89,7 +88,7 @@ class Benchmark:
             'metrics': {}
         }
         model = model.to(self.device)
-        profiler = pyinstrument.Profiler()
+        profiler = Profiler(self.device)
 
         # Profile defense
         print('[*] Profiling defense')
@@ -97,22 +96,19 @@ class Benchmark:
         with profiler:
             robust_model = defense.apply(model)
         result['defense'] = {
-            'memory': torch.cuda.max_memory_allocated(self.device),
-            'runtime': profiler.last_session.cpu_time
+            'memory': profiler.memory,
+            'runtime': profiler.runtime
         }
-        profiler.reset()
 
         # Profile model inference
         print('[*] Profiling standard model')
-        torch.cuda.reset_peak_memory_stats(self.device)
         with profiler:
             for x_data, _ in data_loader:
                 model(x_data.to(self.device))
         result['model']['standard'] = {
-            'memory': torch.cuda.max_memory_allocated(self.device),
-            'runtime': profiler.last_session.cpu_time
+            'memory': profiler.memory,
+            'runtime': profiler.runtime
         }
-        profiler.reset()
 
         print('[*] Profiling robust model')
         torch.cuda.reset_peak_memory_stats(self.device)
@@ -120,8 +116,8 @@ class Benchmark:
             for x_data, _ in data_loader:
                 robust_model(x_data.to(self.device))
         result['model']['robust'] = {
-            'memory': torch.cuda.max_memory_allocated(self.device),
-            'runtime': profiler.last_session.cpu_time
+            'memory': profiler.memory,
+            'runtime': profiler.runtime
         }
 
         # Measure task-specific metrics

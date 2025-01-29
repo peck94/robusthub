@@ -43,16 +43,12 @@ class ProjectedGradientDescent(Attack):
         for _ in range(self.iterations):
             y_pred = model(x_adv)
             loss = F.nll_loss(y_pred, y_data)
-            _grad_check(loss)
             loss.backward()
 
             with torch.no_grad():
                 deltas = self.alpha * torch.sign(x_adv.grad)
                 x_adv = x_adv + deltas
                 x_adv = self.threat.project(x_data, x_adv)
-
-            x_adv.grad = None
             x_adv.requires_grad = True
-            model.zero_grad()
 
         return x_adv.detach()

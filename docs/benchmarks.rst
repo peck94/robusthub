@@ -6,3 +6,6 @@ Benchmarks
     :exclude-members: Value
 
 .. autonamedtuple:: robusthub.benchmarks.Value
+
+.. automodule:: robusthub.profiler
+    :members:
