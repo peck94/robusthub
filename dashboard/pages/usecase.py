@@ -37,13 +37,17 @@ def get_summaries(benchmarks: List[Benchmark]) -> Figure:
                     'standard_err': [],
                     'robust': [],
                     'robust_err': [],
-                    'bounds': values['bounds']
+                    'bounds': values['bounds'],
+                    'models': [],
+                    'defenses': []
                 }
 
             plots[metric]['standard'].append(float(values['standard']['mean']))
             plots[metric]['standard_err'].append(float(values['standard']['err']))
             plots[metric]['robust'].append(float(values['robust']['mean']))
             plots[metric]['robust_err'].append(float(values['robust']['err']))
+            plots[metric]['models'].append(b.model.title)
+            plots[metric]['defenses'].append(b.defense.title)
 
     fig = make_subplots(rows=len(plots), cols=1, subplot_titles=sorted(plots.keys()))
     for i, metric in enumerate(sorted(plots.keys())):
@@ -52,6 +56,7 @@ def get_summaries(benchmarks: List[Benchmark]) -> Figure:
             go.Scatter(
                 x=data['standard'],
                 y=data['robust'],
+                customdata=np.stack((data['models'], data['defenses']), axis=-1),
                 error_x=dict(
                     type='data',
                     array=data['standard_err'],
@@ -63,7 +68,7 @@ def get_summaries(benchmarks: List[Benchmark]) -> Figure:
                     visible=True
                 ),
                 mode='markers',
-                hovertemplate='<b>Standard:</b> %{x:.2f}<br><b>Robust:</b> %{y:.2f}',
+                hovertemplate='<b>Standard:</b> %{x:.2f}<br><b>Robust:</b> %{y:.2f}<br><b>Model:</b> %{customdata[0]}<br><b>Defense:</b> %{customdata[1]}',
                 showlegend=False,
                 name=metric
             )
