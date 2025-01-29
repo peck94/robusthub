@@ -158,7 +158,7 @@ class TPR(Metric):
         The maximum false positive rate.
     """
     def __init__(self, fpr=.1):
-        super().__init__(f'TPR@FPR={fpr:.2%}', (0, 1))
+        super().__init__(f'TPR({fpr:.2%})', (0, 1))
         self.fpr = fpr
 
         assert 0 <= fpr <= 1, 'FPR must be between 0 and 1'

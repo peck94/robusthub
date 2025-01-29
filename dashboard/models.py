@@ -13,10 +13,9 @@ class Attack(Base):
     name: orm.Mapped[str] = orm.mapped_column(sa.String(50))
     title: orm.Mapped[str] = orm.mapped_column(sa.String(128))
     repo: orm.Mapped[str] = orm.mapped_column(sa.String(128))
-    arguments: orm.Mapped[Optional[str]] = orm.mapped_column(sa.Text())
 
     def __repr__(self) -> str:
-        return f'Attack(id={self.id}, name={self.name}, title={self.title}, repo={self.repo}, arguments={self.arguments})'
+        return f'Attack(id={self.id}, name={self.name}, title={self.title}, repo={self.repo})'
 
 class Defense(Base):
     __tablename__ = 'defenses'
@@ -25,10 +24,9 @@ class Defense(Base):
     name: orm.Mapped[str] = orm.mapped_column(sa.String(50))
     title: orm.Mapped[str] = orm.mapped_column(sa.String(128))
     repo: orm.Mapped[str] = orm.mapped_column(sa.String(128))
-    arguments: orm.Mapped[Optional[str]] = orm.mapped_column(sa.Text())
 
     def __repr__(self) -> str:
-        return f'Defense(id={self.id}, name={self.name}, title={self.title}, repo={self.repo}, arguments={self.arguments})'
+        return f'Defense(id={self.id}, name={self.name}, title={self.title}, repo={self.repo})'
 
 class Model(Base):
     __tablename__ = 'models'
@@ -37,10 +35,9 @@ class Model(Base):
     name: orm.Mapped[str] = orm.mapped_column(sa.String(50))
     title: orm.Mapped[str] = orm.mapped_column(sa.String(128))
     repo: orm.Mapped[str] = orm.mapped_column(sa.String(128))
-    arguments: orm.Mapped[Optional[str]] = orm.mapped_column(sa.Text())
 
     def __repr__(self) -> str:
-        return f'Model(id={self.id}, name={self.name}, title={self.title}, repo={self.repo}, arguments={self.arguments})'
+        return f'Model(id={self.id}, name={self.name}, title={self.title}, repo={self.repo})'
 
 class Dataset(Base):
     __tablename__ = 'datasets'
@@ -65,11 +62,18 @@ class Benchmark(Base):
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
 
     model_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey('models.id'))
+    model_args: orm.Mapped[str] = orm.mapped_column(sa.String())
+
     attack_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey('attacks.id'))
+    attack_args: orm.Mapped[str] = orm.mapped_column(sa.String())
+
     defense_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey('defenses.id'))
+    defense_args: orm.Mapped[str] = orm.mapped_column(sa.String())
+
     dataset_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey('datasets.id'))
 
     threat_model: orm.Mapped[str] = orm.mapped_column(sa.Text())
+    metrics: orm.Mapped[str] = orm.mapped_column(sa.String())
     results: orm.Mapped[str] = orm.mapped_column(sa.Text())
 
     model: orm.Mapped[Model] = orm.relationship(Model, foreign_keys='Benchmark.model_id', lazy='joined')

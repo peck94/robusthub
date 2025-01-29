@@ -35,6 +35,18 @@ def layout(benchmark_id=0, **kwargs):
                 ], className='card bg-light mb-3')
                 for usecase in benchmark.usecases
             ], className='card-group')
+        
+        threat_model = [
+            f'threats.{ident}'
+            for ident in benchmark.threat_model.split('; ')
+        ]
+        if len(threat_model) > 1:
+            threat_model = f'threats.Composite(\n\t{",\n\t".join(threat_model)})'
+        else:
+            threat_model = threat_model[0]
+        
+        metric_names = [f'metrics.{m}' if '(' in m else f'metrics.{m}()' for m in benchmark.metrics.split("; ")]
+        metrics = f'[{", ".join(metric_names)}]'
 
         return html.Div([
             dbc.Row(
@@ -81,13 +93,33 @@ def layout(benchmark_id=0, **kwargs):
             ),
             dbc.Row(
                 dbc.Col(dcc.Markdown(f"""```python
-from robusthub import models, attacks, defenses, benchmarks
+from robusthub import models, attacks, defenses, benchmarks, threats, datasets, metrics
 
+# load data set
+train_loader, val_loader, test_loader = datasets.CIFAR10().load()
+
+# set threat model
+threat_model = {threat_model}
+
+# set metrics
+metrics_list = {metrics}
+
+# load model
 model = models.load('{benchmark.model.repo}', '{benchmark.model.name}')
+
+# load defense
 defense = defenses.load('{benchmark.defense.repo}', '{benchmark.defense.name}')
-attack = attacks.load('{benchmark.attack.repo}', '{benchmark.attack.name}')
-benchmark = benchmarks.Benchmark(attack(threat_model), [metrics.Accuracy()])
-result = benchmark.run(model, defense, testloader)"""))
+
+# load attack
+attack = attacks.load(
+    '{benchmark.attack.repo}', '{benchmark.attack.name}',
+    threat_model=threat_model)
+
+# initialize benchmark
+benchmark = benchmarks.Benchmark(attack, metrics_list)
+
+# run benchmark
+result = benchmark.run(model, defense, test_loader)"""))
             ),
             dbc.Row(
                 dbc.Col(html.H5('Results:'))

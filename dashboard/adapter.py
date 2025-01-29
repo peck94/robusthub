@@ -76,20 +76,18 @@ class Adapter:
                        threat: str,
                        defense: Defense,
                        attack: Attack,
+                       metrics: List,
                        results: str,
                        usecase: Optional[Usecase] = None):
         model = self._find_table(Model,
                                  name=model.name,
-                                 repo=model.repo,
-                                 arguments=model.arguments)
+                                 repo=model.repo)
         attack = self._find_table(Attack,
                                  name=attack.name,
-                                 repo=attack.repo,
-                                 arguments=attack.arguments)
+                                 repo=attack.repo)
         defense = self._find_table(Defense,
                                  name=defense.name,
-                                 repo=defense.repo,
-                                 arguments=defense.arguments)
+                                 repo=defense.repo)
         dataset = self._find_table(Dataset,
                                    title=dataset.title,
                                    url=dataset.url)
@@ -101,6 +99,7 @@ class Adapter:
                 attack_id=attack.id,
                 dataset_id=dataset.id,
                 threat_model=threat,
+                metrics='; '.join([metric.name for metric in metrics]),
                 results=results
             )
             sess.add(benchmark)
