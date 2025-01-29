@@ -3,7 +3,18 @@ from dash import html, dcc
 
 import dash_bootstrap_components as dbc
 
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
+# external JavaScript files
+external_scripts = []
+
+# external CSS stylesheets
+external_stylesheets = [
+    dbc.themes.BOOTSTRAP,
+]
+
+app = dash.Dash(
+    external_stylesheets=external_stylesheets,
+    external_scripts=external_scripts,
+    use_pages=True)
 app.title = 'RobustHub'
 
 app.layout = html.Div(
@@ -21,7 +32,7 @@ app.layout = html.Div(
         ),
         dbc.Container([
             dash.page_container
-        ], id="page-content", className="pt-4"),
+        ], id="page-content", className="pt-4")
     ]
 )
 

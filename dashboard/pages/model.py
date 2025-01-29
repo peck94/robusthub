@@ -1,5 +1,5 @@
 import dash
-from dash import html
+from dash import html, dcc
 
 from utils import print_results
 
@@ -44,11 +44,11 @@ def layout(model_id=0, **kwargs):
                 dbc.Col(html.P("Loading the model:"))
             ),
             dbc.Row(
-                dbc.Col(html.Pre(html.Code([
-                    "from robusthub import models",
-                    html.Br(),
-                    f"model = models.load('{model.repo}', '{model.name}')"
-                ])))
+                dbc.Col(dcc.Markdown(f"""```python
+from robusthub import models
+
+model = models.load('{model.repo}', '{model.name}')
+"""))
             ),
             dbc.Row(
                 dbc.Col(html.H2('Benchmarks'))

@@ -80,19 +80,14 @@ def layout(benchmark_id=0, **kwargs):
                 dbc.Col(html.H5('Running the benchmark:'))
             ),
             dbc.Row(
-                dbc.Col(html.Pre(html.Code([
-                    "from robusthub import models, attacks, defenses, benchmarks",
-                    html.Br(), html.Br(),
-                    f"model = models.load('{benchmark.model.repo}', '{benchmark.model.name}')",
-                    html.Br(),
-                    f"defense = defenses.load('{benchmark.defense.repo}', '{benchmark.defense.name}')",
-                    html.Br(),
-                    f"attack = attacks.load('{benchmark.attack.repo}', '{benchmark.attack.name}')",
-                    html.Br(),
-                    f"benchmark = benchmarks.Benchmark(attack(threat_model), [metrics.Accuracy()])",
-                    html.Br(),
-                    f"result = benchmark.run(model, defense, testloader)"
-                ])))
+                dbc.Col(dcc.Markdown(f"""```python
+from robusthub import models, attacks, defenses, benchmarks
+
+model = models.load('{benchmark.model.repo}', '{benchmark.model.name}')
+defense = defenses.load('{benchmark.defense.repo}', '{benchmark.defense.name}')
+attack = attacks.load('{benchmark.attack.repo}', '{benchmark.attack.name}')
+benchmark = benchmarks.Benchmark(attack(threat_model), [metrics.Accuracy()])
+result = benchmark.run(model, defense, testloader)"""))
             ),
             dbc.Row(
                 dbc.Col(html.H5('Results:'))
@@ -105,7 +100,7 @@ def layout(benchmark_id=0, **kwargs):
             ),
             dbc.Row(
                 dbc.Col(usecase_list)
-            ),
+            )
         ])
     else:
         return html.Div()

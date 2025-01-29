@@ -1,5 +1,5 @@
 import dash
-from dash import html
+from dash import html, dcc
 
 import dash_bootstrap_components as dbc
 
@@ -45,11 +45,11 @@ def layout(attack_id=0, **kwargs):
                 dbc.Col(html.P("Loading the attack:"))
             ),
             dbc.Row(
-                dbc.Col(html.Pre(html.Code([
-                    "from robusthub import attacks",
-                    html.Br(),
-                    f"attack = attacks.load('{attack.repo}', '{attack.name}')"
-                ])))
+                dbc.Col(dcc.Markdown(f"""```python
+from robusthub import attacks
+
+attack = attacks.load('{attack.repo}', '{attack.name}')
+"""))
             ),
             dbc.Row(
                 dbc.Col(html.H2('Benchmarks'))
