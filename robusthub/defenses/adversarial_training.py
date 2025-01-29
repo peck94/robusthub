@@ -7,6 +7,8 @@ Catalog of adversarial training defenses.
 
 import torch
 
+import copy
+
 from typing import Callable
 
 from robusthub.threats import ThreatModel
@@ -83,17 +85,18 @@ class AdversarialTraining(Defense):
         Model
             Adversarially trained model.
         """
-        optimizer = self.optimizer(model.parameters())
+        new_model = copy.deepcopy(model).to(self.device)
+        optimizer = self.optimizer(new_model.parameters())
         for epoch in range(self.nb_epochs):
             progbar = tqdm(self.training_data, desc=f'Epoch {epoch + 1} / {self.nb_epochs}')
             for x_data, y_data in progbar:
                 x_data, y_data = x_data.to(self.device), y_data.to(self.device)
-                x_tilde = self.attack.apply(model, x_data, y_data)
+                x_tilde = self.attack.apply(new_model, x_data, y_data)
 
                 optimizer.zero_grad()
-                y_pred = model(x_tilde)
+                y_pred = new_model(x_tilde)
                 loss = self.criterion(y_pred, y_data)
                 loss.backward()
                 optimizer.step()
 
-        return model
+        return new_model
