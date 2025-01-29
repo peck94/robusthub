@@ -1,7 +1,7 @@
 """
 Catalog of task-specific metrics.
 
-A metric is a real-valued summary statistic computed from a model and a batch of data.
+A metric is a real-valued summary statistic computed from a model and a batch of data. Note that these are not necessarily metrics in the mathematical sense.
 
 We refer to these metrics as *task-specific* because their relevance depends on the particular task that the target model needs to solve.
 For instance, :py:class:`robusthub.metrics.Accuracy` is only applicable to classification tasks,
@@ -21,7 +21,7 @@ from robusthub.models import Model
 
 from skimage.metrics import structural_similarity, peak_signal_noise_ratio
 
-from sklearn.metrics import f1_score, roc_auc_score, roc_curve
+from sklearn.metrics import f1_score, roc_auc_score, roc_curve, matthews_corrcoef
 
 class Metric(ABC):
     """
@@ -169,3 +169,14 @@ class TPR(Metric):
 
         idx = max(0, np.searchsorted(fpr, self.fpr, side='right') - 1)
         return tpr[idx]
+
+class MCC(Metric):
+    """
+    The Matthews correlation coefficient, which is a more robust metric for imbalanced data sets :cite:`chicco2020advantages`.
+    """
+    def __init__(self):
+        super().__init__('MCC', (-1, 1))
+
+    def compute(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> float:
+        y_pred = model(x_data).cpu().detach().numpy().argmax(axis=1)
+        return matthews_corrcoef(y_data.cpu().detach().numpy(), y_pred)
