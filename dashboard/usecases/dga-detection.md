@@ -5,8 +5,9 @@ DGAs are however subject to an important restriction: they must avoid generating
 ### Metrics
 
 * **TPR@FPR=$p$.** DGA detection algorithms must be effective at very low false positive rates (FPRs), typically FPR@0.1% or lower, because erroneously disabling a legitimate domain is very disruptive. Hence the true positive rate (TPR) at a given low FPR is the most important metric here, with $p \in \{ 1\%, 0.1\%, 0.01\% \}$ as common choices.
-* **AUC.** As with all detectors, DGA classifiers can also be evaluated according to their AUC.
+* **AUC.** As with all detectors, DGA classifiers can also be evaluated according to their AUC. The AUC can, however, be biased when the data are heavily imbalanced.
 * **F1.** The F1 score is also commonly used to evaluate binary classifiers.
+* **MCC.** The [Matthews correlation coefficient](https://en.wikipedia.org/wiki/Phi_coefficient) (MCC), also known as the *phi coefficient*, is a measure of association between two binary variables similar to the Pearson correlation. It is considered a more robust evaluation metric for imbalanced data sets.
 
 ### Threat models
 

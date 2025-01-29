@@ -26,56 +26,59 @@ adapter = Adapter(c.data['database'])
 dash.register_page(__name__, path_template="/usecase/<usecase_id>")
 
 def get_summaries(benchmarks: List[Benchmark]) -> Figure:
-    plots = {}
-    for b in benchmarks:
-        results = interpret_results(b)
-        for metric in results['metrics']:
-            values = results['metrics'][metric]
-            if metric not in plots:
-                plots[metric] = {
-                    'standard': [],
-                    'standard_err': [],
-                    'robust': [],
-                    'robust_err': [],
-                    'bounds': values['bounds'],
-                    'models': [],
-                    'defenses': []
-                }
+    if benchmarks:
+        plots = {}
+        for b in benchmarks:
+            results = interpret_results(b)
+            for metric in results['metrics']:
+                values = results['metrics'][metric]
+                if metric not in plots:
+                    plots[metric] = {
+                        'standard': [],
+                        'standard_err': [],
+                        'robust': [],
+                        'robust_err': [],
+                        'bounds': values['bounds'],
+                        'models': [],
+                        'defenses': []
+                    }
 
-            plots[metric]['standard'].append(float(values['standard']['mean']))
-            plots[metric]['standard_err'].append(float(values['standard']['err']))
-            plots[metric]['robust'].append(float(values['robust']['mean']))
-            plots[metric]['robust_err'].append(float(values['robust']['err']))
-            plots[metric]['models'].append(b.model.title)
-            plots[metric]['defenses'].append(b.defense.title)
+                plots[metric]['standard'].append(float(values['standard']['mean']))
+                plots[metric]['standard_err'].append(float(values['standard']['err']))
+                plots[metric]['robust'].append(float(values['robust']['mean']))
+                plots[metric]['robust_err'].append(float(values['robust']['err']))
+                plots[metric]['models'].append(b.model.title)
+                plots[metric]['defenses'].append(b.defense.title)
 
-    fig = make_subplots(rows=len(plots), cols=1, subplot_titles=sorted(plots.keys()))
-    for i, metric in enumerate(sorted(plots.keys())):
-        data = plots[metric]
-        fig.add_trace(
-            go.Scatter(
-                x=data['standard'],
-                y=data['robust'],
-                customdata=np.stack((data['models'], data['defenses']), axis=-1),
-                error_x=dict(
-                    type='data',
-                    array=data['standard_err'],
-                    visible=True
-                ),
-                error_y=dict(
-                    type='data',
-                    array=data['robust_err'],
-                    visible=True
-                ),
-                mode='markers',
-                hovertemplate='<b>Standard:</b> %{x:.2f}<br><b>Robust:</b> %{y:.2f}<br><b>Model:</b> %{customdata[0]}<br><b>Defense:</b> %{customdata[1]}',
-                showlegend=False,
-                name=metric
+        fig = make_subplots(rows=len(plots), cols=1, subplot_titles=sorted(plots.keys()))
+        for i, metric in enumerate(sorted(plots.keys())):
+            data = plots[metric]
+            fig.add_trace(
+                go.Scatter(
+                    x=data['standard'],
+                    y=data['robust'],
+                    customdata=np.stack((data['models'], data['defenses']), axis=-1),
+                    error_x=dict(
+                        type='data',
+                        array=data['standard_err'],
+                        visible=True
+                    ),
+                    error_y=dict(
+                        type='data',
+                        array=data['robust_err'],
+                        visible=True
+                    ),
+                    mode='markers',
+                    hovertemplate='<b>Standard:</b> %{x:.2f}<br><b>Robust:</b> %{y:.2f}<br><b>Model:</b> %{customdata[0]}<br><b>Defense:</b> %{customdata[1]}',
+                    showlegend=False,
+                    name=metric
+                )
             )
-        )
-        fig.update_xaxes(range=data['bounds'], title='Standard', row=i+1, col=1)
-        fig.update_yaxes(range=data['bounds'], title='Robust', row=i+1, col=1)
-    return fig
+            fig.update_xaxes(range=data['bounds'], title='Standard', row=i+1, col=1)
+            fig.update_yaxes(range=data['bounds'], title='Robust', row=i+1, col=1)
+        return fig
+    else:
+        return None
 
 def layout(usecase_id=0, **kwargs):
     usecase = adapter.get_usecase(usecase_id)
