@@ -19,10 +19,22 @@ def layout(benchmark_id=0, **kwargs):
     if benchmark:
         usecase_list = 'This benchmark has no associated usecases.'
         if benchmark.usecases:
-            usecase_list = html.Ul([
-                html.Li(dcc.Link(uc.title, href=f'/usecase/{uc.id}'))
-                for uc in benchmark.usecases
-            ])
+            usecase_list = html.Div([
+                html.Div([
+                    dcc.Link(
+                        html.Img(src=usecase.thumbnail, className='card-img-top', height=325),
+                        href=f'/usecase/{usecase.id}'),
+                    html.Div([
+                        html.Div([
+                            html.H5(usecase.title)
+                        ], className='card-title'),
+                        html.P([
+                            usecase.short_description
+                        ], className='card-text'),
+                    ], className='card-body')
+                ], className='card bg-light mb-3')
+                for usecase in benchmark.usecases
+            ], className='card-group')
 
         return html.Div([
             dbc.Row(
@@ -65,18 +77,6 @@ def layout(benchmark_id=0, **kwargs):
                 )
             ),
             dbc.Row(
-                dbc.Col(html.H5('Results:'))
-            ),
-            dbc.Row(
-                print_results(benchmark.results)
-            ),
-            dbc.Row(
-                dbc.Col(html.H5('Associated usecases:'))
-            ),
-            dbc.Row(
-                dbc.Col(usecase_list)
-            ),
-            dbc.Row(
                 dbc.Col(html.H5('Running the benchmark:'))
             ),
             dbc.Row(
@@ -93,6 +93,18 @@ def layout(benchmark_id=0, **kwargs):
                     html.Br(),
                     f"result = benchmark.run(model, defense, testloader)"
                 ])))
+            ),
+            dbc.Row(
+                dbc.Col(html.H5('Results:'))
+            ),
+            dbc.Row(
+                print_results(benchmark.results)
+            ),
+            dbc.Row(
+                dbc.Col(html.H5('Associated usecases:'))
+            ),
+            dbc.Row(
+                dbc.Col(usecase_list)
             ),
         ])
     else:

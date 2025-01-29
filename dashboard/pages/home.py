@@ -60,7 +60,9 @@ usecase_title = html.H2('Usecases')
 usecases = adapter.load_usecases()
 usecase_table = html.Div([
     html.Div([
-        html.Img(src=usecase.thumbnail, className='card-img-top', height=325),
+        dcc.Link(
+            html.Img(src=usecase.thumbnail, className='card-img-top', height=325),
+            href=f'/usecase/{usecase.id}'),
         html.Div([
             html.Div([
                 html.H5(usecase.title)
@@ -68,8 +70,7 @@ usecase_table = html.Div([
             html.P([
                 usecase.short_description
             ], className='card-text'),
-            dcc.Link('Read more', href=f'/usecase/{usecase.id}', className='card-link')
-        ], className='card-body')
+        ], className='card-body bg-light mb-3')
     ], className='card')
     for usecase in usecases
 ], className='card-group')

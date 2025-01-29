@@ -1,3 +1,7 @@
 .benchmarks_row {
     border-bottom: 1px solid gray;
 }
+
+.card {
+    max-width: 18rem;
+}
