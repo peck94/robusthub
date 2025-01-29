@@ -24,12 +24,21 @@ class FastGradientSignMethod(Attack):
         self.eps = eps
     
     def apply(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> torch.Tensor:
-        samples = x_data.clone().detach().requires_grad_()
+        x_adv = x_data.clone().detach()
+        x_adv.requires_grad = True
 
-        y_pred = model(samples)
+        y_pred = model(x_adv)
         loss = F.nll_loss(y_pred, y_data)
         _grad_check(loss)
         loss.backward()
 
-        x_tilde = samples + self.eps * torch.sign(samples.grad)
-        return self.threat.project(x_data, x_tilde)
+        with torch.no_grad():
+            deltas = self.eps * torch.sign(x_adv.grad)
+            x_adv = x_adv + deltas
+            x_adv = self.threat.project(x_data, x_adv)
+
+        x_adv.grad = None
+        loss.grad = None
+        model.zero_grad()
+
+        return x_adv.detach()

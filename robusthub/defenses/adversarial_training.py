@@ -86,8 +86,7 @@ class AdversarialTraining(Defense):
         optimizer = self.optimizer(model.parameters())
         for epoch in range(self.nb_epochs):
             progbar = tqdm(self.training_data, desc=f'Epoch {epoch + 1} / {self.nb_epochs}')
-            for batch in progbar:
-                x_data, y_data = batch
+            for x_data, y_data in progbar:
                 x_data, y_data = x_data.to(self.device), y_data.to(self.device)
                 x_tilde = self.attack.apply(model, x_data, y_data)
 

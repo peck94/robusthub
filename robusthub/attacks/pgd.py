@@ -1,6 +1,8 @@
 import torch
 import torch.nn.functional as F
 
+import gc
+
 from robusthub.models import Model
 from robusthub.threats import ThreatModel
 from robusthub.attacks.attack import Attack, _grad_check
@@ -35,28 +37,22 @@ class ProjectedGradientDescent(Attack):
         self.device = device
     
     def apply(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> torch.Tensor:
-        noise = torch.randn(x_data.shape).to(self.device)
-        x_tilde = self.threat.project(x_data, x_data + noise)
-        best_loss = -torch.inf
-        x_best = torch.zeros_like(x_data)
+        x_adv = x_data.clone().detach()
+        x_adv.requires_grad = True
 
         for _ in range(self.iterations):
-            samples = x_tilde.clone().detach().requires_grad_()
-
-            y_pred = model(samples)
+            y_pred = model(x_adv)
             loss = F.nll_loss(y_pred, y_data)
             _grad_check(loss)
             loss.backward()
 
-            deltas = self.alpha * torch.sign(samples.grad)
-            x_tilde = self.threat.project(x_data, x_tilde + deltas)
+            with torch.no_grad():
+                deltas = self.alpha * torch.sign(x_adv.grad)
+                x_adv = x_adv + deltas
+                x_adv = self.threat.project(x_data, x_adv)
 
-            y_pred = model(x_tilde)
-            loss = F.nll_loss(y_pred, y_data)
-            if loss > best_loss:
-                best_loss = loss.item()
-                x_best = x_tilde.clone()
-            
-            samples.grad = None
+            x_adv.grad = None
+            x_adv.requires_grad = True
+            model.zero_grad()
 
-        return x_best
+        return x_adv.detach()
