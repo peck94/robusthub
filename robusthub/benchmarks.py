@@ -57,7 +57,7 @@ class Benchmark:
     device
         Torch device.
     """
-    def __init__(self, attack: attacks.Attack, metrics: List[metrics.Metric], device: torch.device):
+    def __init__(self, attack: attacks.Attack, metrics: List[metrics.Metric], device: torch.device = torch.device('cuda')):
         self.attack = attack
         self.metrics = metrics
         self.device = device

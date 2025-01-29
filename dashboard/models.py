@@ -52,6 +52,13 @@ class Dataset(Base):
     def __repr__(self) -> str:
         return f'Dataset(id={self.id}, title={self.title}, url={self.url})'
 
+usecases_benchmarks_table = sa.Table(
+    'usecases_benchmarks',
+    Base.metadata,
+    sa.Column('usecase_id', sa.ForeignKey('usecases.id')),
+    sa.Column('benchmark_id', sa.ForeignKey('benchmarks.id')),
+)
+
 class Benchmark(Base):
     __tablename__ = 'benchmarks'
 
@@ -70,15 +77,10 @@ class Benchmark(Base):
     defense: orm.Mapped[Defense] = orm.relationship(Defense, foreign_keys='Benchmark.defense_id', lazy='joined')
     dataset: orm.Mapped[Dataset] = orm.relationship(Dataset, foreign_keys='Benchmark.dataset_id', lazy='joined')
 
+    usecases: orm.Mapped[List['Usecase']] = orm.relationship(secondary=usecases_benchmarks_table, lazy='selectin')
+
     def __repr__(self) -> str:
         return f'Benchmark(id={self.id}, model={self.model_id}, attack={self.attack_id}, defense={self.defense_id}, results={self.results})'
-
-usecases_benchmarks_table = sa.Table(
-    'usecases_benchmarks',
-    Base.metadata,
-    sa.Column('usecase_id', sa.ForeignKey('usecases.id')),
-    sa.Column('benchmark_id', sa.ForeignKey('benchmarks.id')),
-)
 
 class Usecase(Base):
     __tablename__ = 'usecases'

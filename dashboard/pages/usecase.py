@@ -95,14 +95,16 @@ def layout(usecase_id=0, **kwargs):
                 html.Th('Threat model'),
                 html.Th('Defense'),
                 html.Th('Attack'),
-                html.Th('Results')
+                html.Th('Results'),
+                html.Th('Actions')
             ]))] + [html.Tr([
                 html.Td(b.dataset.title),
                 html.Td(b.model.title),
                 html.Td(b.threat_model),
                 html.Td(b.defense.title),
                 html.Td(b.attack.title),
-                html.Td(print_results(b.results))
+                html.Td(print_results(b.results)),
+                html.Td(dcc.Link('View', href=f'/benchmark/{b.id}'))
             ], className='benchmarks_row')
             for b in usecase.benchmarks
         ])

@@ -66,6 +66,9 @@ class Adapter:
         with orm.Session(self.engine) as session:
             items = list(session.scalars(stmt))
         return items
+    
+    def get_benchmark(self, id: int) -> Benchmark:
+        return self._get_table(Benchmark, id)
 
     def save_benchmark(self,
                        model: Model,

@@ -13,7 +13,7 @@ app.layout = html.Div(
             children=[
                 dbc.NavLink("Home", href="/"),
                 dbc.NavLink("Documentation", href="/page-1"),
-                dbc.NavLink("GitHub", href="/page-2"),
+                dbc.NavLink("GitHub", href="https://github.com/peck94/robusthub"),
             ],
             brand="RobustHub",
             color="primary",

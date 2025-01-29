@@ -1,0 +1,99 @@
+import dash
+from dash import html, dcc
+
+from utils import print_results
+
+import dash_bootstrap_components as dbc
+
+from adapter import Adapter
+
+from config import Config
+
+c = Config()
+adapter = Adapter(c.data['database'])
+
+dash.register_page(__name__, path_template="/benchmark/<benchmark_id>")
+
+def layout(benchmark_id=0, **kwargs):
+    benchmark = adapter.get_benchmark(benchmark_id)
+    if benchmark:
+        usecase_list = 'This benchmark has no associated usecases.'
+        if benchmark.usecases:
+            usecase_list = html.Ul([
+                html.Li(dcc.Link(uc.title, href=f'/usecase/{uc.id}'))
+                for uc in benchmark.usecases
+            ])
+
+        return html.Div([
+            dbc.Row(
+                dbc.Col(html.H1(f'Benchmark'))
+            ),
+            dbc.Row(
+                dbc.Col(
+                    dbc.Table(
+                        html.Tbody([
+                            html.Tr([
+                                html.Th('Data set'),
+                                html.Td(
+                                    dcc.Link(benchmark.dataset.title, href=f'/dataset/{benchmark.dataset.id}')
+                                )
+                            ]),
+                            html.Tr([
+                                html.Th('Model'),
+                                html.Td(
+                                    dcc.Link(benchmark.model.title, href=f'/model/{benchmark.model.id}')
+                                )
+                            ]),
+                            html.Tr([
+                                html.Th('Defense'),
+                                html.Td(
+                                    dcc.Link(benchmark.defense.title, href=f'/defense/{benchmark.defense.id}')
+                                )
+                            ]),
+                            html.Tr([
+                                html.Th('Attack'),
+                                html.Td(
+                                    dcc.Link(benchmark.attack.title, href=f'/attack/{benchmark.attack.id}')
+                                )
+                            ]),
+                            html.Tr([
+                                html.Th('Threat model'),
+                                html.Td(benchmark.threat_model)
+                            ]),
+                        ])
+                    )
+                )
+            ),
+            dbc.Row(
+                dbc.Col(html.H5('Results:'))
+            ),
+            dbc.Row(
+                print_results(benchmark.results)
+            ),
+            dbc.Row(
+                dbc.Col(html.H5('Associated usecases:'))
+            ),
+            dbc.Row(
+                dbc.Col(usecase_list)
+            ),
+            dbc.Row(
+                dbc.Col(html.H5('Running the benchmark:'))
+            ),
+            dbc.Row(
+                dbc.Col(html.Pre(html.Code([
+                    "from robusthub import models, attacks, defenses, benchmarks",
+                    html.Br(), html.Br(),
+                    f"model = models.load('{benchmark.model.repo}', '{benchmark.model.name}')",
+                    html.Br(),
+                    f"defense = defenses.load('{benchmark.defense.repo}', '{benchmark.defense.name}')",
+                    html.Br(),
+                    f"attack = attacks.load('{benchmark.attack.repo}', '{benchmark.attack.name}')",
+                    html.Br(),
+                    f"benchmark = benchmarks.Benchmark(attack(threat_model), [metrics.Accuracy()])",
+                    html.Br(),
+                    f"result = benchmark.run(model, defense, testloader)"
+                ])))
+            ),
+        ])
+    else:
+        return html.Div()
