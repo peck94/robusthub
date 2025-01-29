@@ -58,16 +58,21 @@ jumbotron = html.Div(
 
 usecase_title = html.H2('Usecases')
 usecases = adapter.load_usecases()
-usecase_head = html.Thead(html.Tr([
-    html.Th('Name'), html.Th('Description')
-]))
-usecase_list = [
-    html.Tr([
-        html.Td(dcc.Link(usecase.title, href=f'/usecase/{usecase.id}')),
-        html.Td(usecase.short_description)
-    ]) for usecase in usecases
-]
-usecase_table = dbc.Table([usecase_head] + usecase_list, bordered=True)
+usecase_table = html.Div([
+    html.Div([
+        html.Img(src=usecase.thumbnail, className='card-img-top', height=325),
+        html.Div([
+            html.Div([
+                html.H5(usecase.title)
+            ], className='card-title'),
+            html.P([
+                usecase.short_description
+            ], className='card-text'),
+            dcc.Link('Read more', href=f'/usecase/{usecase.id}', className='card-link')
+        ], className='card-body')
+    ], className='card')
+    for usecase in usecases
+], className='card-group')
 
 model_title = html.H2('Model catalog')
 models = adapter.load_models()
@@ -93,7 +98,7 @@ datasets_table = dbc.Table([
         ]) for dataset in datasets
     ], bordered=True)
 
-layout = html.Div(
+layout = dbc.Container(
     [
         jumbotron,
         dbc.Row(

@@ -21,17 +21,20 @@ usecases = [
     {
         'title': 'Image classification',
         'short': 'Classification of images into discrete categories.',
-        'full': 'image-classification.md'
+        'full': 'image-classification.md',
+        'thumb': '/assets/thumbnails/image-classification.png'
     },
     {
         'title': 'Medical image reconstruction',
         'short': 'Reconstruction of medical images, such as MR and CT, from noisy observations.',
-        'full': 'medical-image-reconstruction.md'
+        'full': 'medical-image-reconstruction.md',
+        'thumb': '/assets/thumbnails/medical-image-reconstruction.png'
     },
     {
         'title': 'DGA detection',
         'short': 'Classification of internet domain names into malicious or benign.',
-        'full': 'dga-detection.md'
+        'full': 'dga-detection.md',
+        'thumb': '/assets/thumbnails/dga-detection.png'
     }
 ]
 
@@ -40,7 +43,8 @@ def upgrade() -> None:
         title = uc['title']
         short = uc['short']
         full = uc['full']
-        op.execute(f"insert into usecases (title, short_description, full_description) values ('{title}', '{short}', '{full}')")
+        thumb = uc['thumb']
+        op.execute(f"insert into usecases (title, short_description, full_description, thumbnail) values ('{title}', '{short}', '{full}', '{thumb}')")
 
 
 def downgrade() -> None:

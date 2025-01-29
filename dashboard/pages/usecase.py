@@ -111,9 +111,13 @@ def layout(usecase_id=0, **kwargs):
             dbc.Row(
                 dbc.Col(html.H1(f'{usecase.title}'))
             ),
-            dbc.Row(
+            dbc.Row([
+                dbc.Col(
+                    html.Img(src=usecase.thumbnail, width='100%'),
+                    width=3
+                ),
                 dbc.Col(description)
-            ),
+            ]),
             dbc.Row(
                 dbc.Col(html.H2('Benchmarks'))
             ),

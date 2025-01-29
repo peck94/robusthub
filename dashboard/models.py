@@ -88,8 +88,9 @@ class Usecase(Base):
     title: orm.Mapped[str] = orm.mapped_column(sa.Text())
     short_description: orm.Mapped[str] = orm.mapped_column(sa.Text())
     full_description: orm.Mapped[str] = orm.mapped_column(sa.Text())
+    thumbnail: orm.Mapped[str] = orm.mapped_column(sa.String())
 
     benchmarks: orm.Mapped[List[Benchmark]] = orm.relationship(secondary=usecases_benchmarks_table, lazy='selectin')
 
     def __repr__(self) -> str:
-        return f'Usecase(id={self.id}, title={self.title}, short_description={self.short_description}, full_description={self.full_description})'
+        return f'Usecase(id={self.id}, title={self.title}, short_description={self.short_description}, full_description={self.full_description}, thumbnail={self.thumbnail})'

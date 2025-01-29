@@ -23,7 +23,8 @@ def upgrade() -> None:
                     sa.Column('id', sa.Integer, primary_key=True),
                     sa.Column('title', sa.String(128), nullable=False),
                     sa.Column('short_description', sa.String(256), nullable=False),
-                    sa.Column('full_description', sa.String(256), nullable=False))
+                    sa.Column('full_description', sa.String(256), nullable=False),
+                    sa.Column('thumbnail', sa.String(), nullable=False, default='/assets/thumbnails/placeholder.png'))
     op.create_table('usecases_benchmarks',
                     sa.Column('usecase_id', sa.Integer, sa.ForeignKey('usecases.id')),
                     sa.Column('benchmark_id', sa.Integer, sa.ForeignKey('benchmarks.id')))
