@@ -7,6 +7,8 @@ Catalog of adversarial training defenses.
 
 import torch
 
+import numpy as np
+
 import copy
 
 from typing import Callable
@@ -87,6 +89,8 @@ class AdversarialTraining(Defense):
         """
         new_model = copy.deepcopy(model).to(self.device)
         optimizer = self.optimizer(new_model.parameters())
+        best_loss = np.inf
+        best_params = copy.deepcopy(new_model.state_dict())
         for epoch in range(self.nb_epochs):
             progbar = tqdm(self.training_data, desc=f'Epoch {epoch + 1} / {self.nb_epochs}')
             for x_data, y_data in progbar:
@@ -98,5 +102,19 @@ class AdversarialTraining(Defense):
                 loss = self.criterion(y_pred, y_data)
                 loss.backward()
                 optimizer.step()
+            
+            losses = []
+            for x_data, y_data in self.validation_data:
+                x_data, y_data = x_data.to(self.device), y_data.to(self.device)
+                x_tilde = self.attack.apply(new_model, x_data, y_data)
 
+                y_pred = new_model(x_tilde)
+                loss = self.criterion(y_pred, y_data)
+                losses.append(loss.item())
+            avg_loss = np.mean(losses)
+            if avg_loss < best_loss:
+                best_loss = avg_loss
+                best_params = copy.deepcopy(new_model.state_dict())
+
+        new_model.load_state_dict(best_params)
         return new_model
