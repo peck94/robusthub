@@ -63,6 +63,7 @@ class ProjectedGradientDescent(Attack):
                 # get loss gradients
                 y_pred = model(x_adv)
                 loss = F.nll_loss(y_pred, y_data)
+                _grad_check(loss)
                 loss.backward()
 
                 with torch.no_grad():
