@@ -90,8 +90,9 @@ class AutoProjectedGradientDescent(Attack):
 
                 with torch.no_grad():
                     # update perturbations
-                    z = self.threat.project(x_adv + eta * x_adv.grad)
-                    x_next = self.threat.project(x_adv
+                    z = self.threat.project(x_data, x_adv + eta * torch.sign(x_adv.grad))
+                    x_next = self.threat.project(x_data,
+                                                 x_adv
                                                 + self.alpha * (z - x_adv)
                                                 + (1 - self.alpha) * (x_adv - x_prev))
                     x_prev = x_adv.detach().clone()

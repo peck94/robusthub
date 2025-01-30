@@ -39,7 +39,7 @@ class AdversarialTraining(Defense):
         Number of epochs of training.
     
     attack
-        Adversarial attack to use for training. Defaults to :py:class:`robusthub.attacks.pgd.ProjectedGradientDescent`.
+        Adversarial attack to use for training. Defaults to :py:class:`robusthub.attacks.pgd.ProjectedGradientDescent` with :code:`restarts=1`.
     
     optimizer
         Optimizer to use for training.
@@ -71,7 +71,7 @@ class AdversarialTraining(Defense):
         self.device = device
 
         if attack is None:
-            self.attack = ProjectedGradientDescent(threat_model, device=device)
+            self.attack = ProjectedGradientDescent(threat_model, restarts=1, device=device)
 
     def apply(self, model: Model) -> Model:
         """
