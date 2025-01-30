@@ -40,6 +40,8 @@ class ProjectedGradientDescent(Attack):
         x_adv = x_data.clone().detach()
         x_adv.requires_grad = True
 
+        x_best = torch.zeros_like(x_data)
+        best_loss = -torch.inf
         for _ in range(self.iterations):
             y_pred = model(x_adv)
             loss = F.nll_loss(y_pred, y_data)
@@ -49,6 +51,12 @@ class ProjectedGradientDescent(Attack):
                 deltas = self.alpha * torch.sign(x_adv.grad)
                 x_adv = x_adv + deltas
                 x_adv = self.threat.project(x_data, x_adv)
+
+                y_pred = model(x_adv)
+                loss = F.nll_loss(y_pred, y_data).item()
+                if loss > best_loss:
+                    best_loss = loss
+                    x_best = x_adv.detach().clone()
             x_adv.requires_grad = True
 
-        return x_adv.detach()
+        return x_best
