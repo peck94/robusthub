@@ -35,21 +35,21 @@ class Dataset(ABC):
         self.name = name
         self.path = path
     
-    """
-    Load the data set.
-
-    Parameters
-    -----------
-    batch_size
-        Size of the data batches.
-
-    seed
-        Random seed to use for data splitting.
-    
-    Returns
-    --------
-    A tuple consisting of the training, validation and test data.
-    """
     @abstractmethod
     def load(self, batch_size: int = 32, seed: int = 42) -> Tuple[DataLoader, DataLoader, DataLoader]:
+        """
+        Load the data set.
+
+        Parameters
+        -----------
+        batch_size
+            Size of the data batches.
+
+        seed
+            Random seed to use for data splitting.
+        
+        Returns
+        --------
+        A tuple consisting of the training, validation and test data.
+        """
         pass
