@@ -1,8 +1,6 @@
 import torch
 import torch.nn.functional as F
 
-import gc
-
 from robusthub.models import Model
 from robusthub.threats import ThreatModel
 from robusthub.attacks.attack import Attack, _grad_check

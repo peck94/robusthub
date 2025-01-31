@@ -6,7 +6,7 @@ import torchvision.transforms as transforms
 
 from typing import Tuple
 
-from dataset import Dataset
+from robusthub.datasets import Dataset
 
 class CIFAR10(Dataset):
     """

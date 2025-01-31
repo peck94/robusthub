@@ -1,2 +1,2 @@
-from dataset import Dataset
-from cifar10 import CIFAR10
+from robusthub.datasets.dataset import Dataset
+from robusthub.datasets.cifar10 import CIFAR10
