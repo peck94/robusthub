@@ -4,12 +4,21 @@ which are unique to the particular task the models need to solve, and *task-agno
 which are always relevant. All benchmarks always measure the following task-agnostic metrics:
 
 * Runtime of applying the defense.
-* Runtime of inference.
-* Memory consumption during application of the defense.
-* Memory consumption during inference.
+* Runtime of inference with the standard and robust model.
+* Peak memory consumption during application of the defense.
+* Peak memory consumption during inference with the standard and robust model.
+
+To allow for a fairer comparison across different hardware, runtime measurements should be normalized
+with respect to the runtime of inference of the baseline model according to the following formula:
+
+.. math::
+    \\mathrm{Runtime} = \\frac{\\mathrm{Value} - \\mathrm{Baseline}}{\\mathrm{Baseline}}.
+
+Hence the reported runtime of the standard model is always zero. This is a recommended normalization
+strategy which we implement in the dashboard app; we still record raw measurements in the benchmarks themselves.
 
 Task-specific metrics must be specified by the user and are detailed in our :doc:`Metrics <metrics>` page.
-All task-specific metrics are computed on clean as well as adversarially corrupted data.
+All task-specific metrics are computed using the robust model on clean as well as adversarially corrupted data.
 """
 
 from typing import List, NamedTuple, Union
