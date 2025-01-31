@@ -51,7 +51,7 @@ class Value(NamedTuple):
         """
         String representation of this value.
         """
-        return f"{{'mean': '{self.mean}', 'err': {self.err}}}"
+        return f"{{'mean': {self.mean}, 'err': {self.err}}}"
 
 class ResultFlags(Flag):
     """
@@ -116,7 +116,7 @@ class Result:
         self.record.append(record)
     
     def __repr__(self):
-        return f'[{", ".join(self.record)}]'
+        return f'[{", ".join([str(r) for r in self.record])}]'
 
 class Benchmark:
     """
