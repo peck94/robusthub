@@ -61,10 +61,10 @@ class ResultFlags(Flag):
     #: This value applies to the defense.
     DEFENSE = auto()
 
-    #: This value was measured on clean data.
+    #: This value was measured in the standard (non-adversarial) setting.
     STANDARD = auto()
 
-    #: This value was measured on adversarial data.
+    #: This value was measured in the adversarial setting.
     ROBUST = auto()
 
 class Result:
