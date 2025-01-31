@@ -12,7 +12,9 @@ Task-specific metrics must be specified by the user and are detailed in our :doc
 All task-specific metrics are computed on clean as well as adversarially corrupted data.
 """
 
-from typing import List, NamedTuple
+from typing import List, NamedTuple, Union
+
+from enum import Flag, auto
 
 import torch
 
@@ -42,6 +44,71 @@ class Value(NamedTuple):
         """
         return f"{{'mean': '{self.mean}', 'err': {self.err}}}"
 
+class ResultFlags(Flag):
+    """
+    Flags that identify a specific type of measurement result.
+    """
+
+    #: A task-agnostic metric.
+    AGNOSTIC = auto()
+
+    #: A task-specific metric.
+    SPECIFIC = auto()
+
+    #: This value applies to the model.
+    MODEL = auto()
+
+    #: This value applies to the defense.
+    DEFENSE = auto()
+
+    #: This value was measured on clean data.
+    STANDARD = auto()
+
+    #: This value was measured on adversarial data.
+    ROBUST = auto()
+
+class Result:
+    """
+    Represents the results of a benchmark.
+    """
+    def __init__(self):
+        self.record = []
+
+    def store(self, metric: Union[metrics.Metric, str], t: ResultFlags, value: Value):
+        """
+        Store a result.
+
+        Parameters
+        -----------
+        metric
+            The metric that was measured.
+        
+        t
+            Flags describing the type of measurement.
+        
+        value
+            The measured value.
+        
+        bounds
+            Lower and upper bounds of the metric, if any.
+        """
+        if isinstance(metric, metrics.Metric):
+            record = {
+                'metric': metric.name,
+                'flags': t,
+                'value': value
+            }
+        else:
+            record = {
+                'metric': metric,
+                'flags': t,
+                'value': value
+            }
+        self.record.append(record)
+    
+    def __repr__(self):
+        return f'[{", ".join(self.record)}]'
+
 class Benchmark:
     """
     Base class for all benchmarks.
@@ -51,18 +118,18 @@ class Benchmark:
     attack
         Adversarial attack used for robustness assessment.
     
-    metrics
+    metrics_list
         List of task-specific metrics.
     
     device
         Torch device.
     """
-    def __init__(self, attack: attacks.Attack, metrics: List[metrics.Metric], device: torch.device = torch.device('cuda')):
+    def __init__(self, attack: attacks.Attack, metrics_list: List[metrics.Metric], device: torch.device = torch.device('cuda')):
         self.attack = attack
-        self.metrics = metrics
+        self.metrics = metrics_list
         self.device = device
 
-    def run(self, model: models.Model, defense: defenses.Defense, data_loader: torch.utils.data.DataLoader) -> dict:
+    def run(self, model: models.Model, defense: defenses.Defense, data_loader: torch.utils.data.DataLoader) -> Result:
         """
         Run the benchmark.
 
@@ -79,14 +146,10 @@ class Benchmark:
         
         Returns
         --------
-        dict
-            A dictionary of benchmark results.
+        Result
+            An object describing the benchmark results.
         """
-        result = {
-            'model': {},
-            'defense': {},
-            'metrics': {}
-        }
+        result = Result()
         model = model.to(self.device)
         profiler = Profiler(self.device)
 
@@ -95,30 +158,36 @@ class Benchmark:
         torch.cuda.reset_peak_memory_stats(self.device)
         with profiler:
             robust_model = defense.apply(model)
-        result['defense'] = {
-            'memory': profiler.memory,
-            'runtime': profiler.runtime
-        }
+        result.store('Memory',
+                     ResultFlags.AGNOSTIC | ResultFlags.DEFENSE,
+                     Value(mean=profiler.memory, err=0))
+        result.store('Runtime',
+                     ResultFlags.AGNOSTIC | ResultFlags.DEFENSE,
+                     Value(mean=profiler.runtime, err=0))
 
         # Profile model inference
         print('[*] Profiling standard model')
         with profiler:
             for x_data, _ in data_loader:
                 model(x_data.to(self.device))
-        result['model']['standard'] = {
-            'memory': profiler.memory,
-            'runtime': profiler.runtime
-        }
+        result.store('Memory',
+                     ResultFlags.AGNOSTIC | ResultFlags.MODEL | ResultFlags.STANDARD,
+                     Value(mean=profiler.memory, err=0))
+        result.store('Runtime',
+                     ResultFlags.AGNOSTIC | ResultFlags.MODEL | ResultFlags.STANDARD,
+                     Value(mean=profiler.runtime, err=0))
 
         print('[*] Profiling robust model')
         torch.cuda.reset_peak_memory_stats(self.device)
         with profiler:
             for x_data, _ in data_loader:
                 robust_model(x_data.to(self.device))
-        result['model']['robust'] = {
-            'memory': profiler.memory,
-            'runtime': profiler.runtime
-        }
+        result.store('Memory',
+                     ResultFlags.AGNOSTIC | ResultFlags.MODEL | ResultFlags.ROBUST,
+                     Value(mean=profiler.memory, err=0))
+        result.store('Runtime',
+                     ResultFlags.AGNOSTIC | ResultFlags.MODEL | ResultFlags.ROBUST,
+                     Value(mean=profiler.runtime, err=0))
 
         # Measure task-specific metrics
         print('[*] Calculating task-specific metrics')
@@ -134,10 +203,11 @@ class Benchmark:
 
                 standard_values.append(standard_value)
                 robust_values.append(robust_value)
-            result['metrics'][metric.name] = {
-                'standard': Value(mean=np.mean(standard_values), err=1.96*np.std(standard_values)/np.sqrt(len(standard_values))),
-                'robust': Value(mean=np.mean(robust_values), err=1.96*np.std(robust_values)/np.sqrt(len(robust_values))),
-                'bounds': metric.bounds
-            }
+            result.store(metric,
+                         ResultFlags.SPECIFIC | ResultFlags.STANDARD,
+                         Value(mean=np.mean(standard_values), err=1.96*np.std(standard_values)/np.sqrt(len(standard_values))))
+            result.store(metric,
+                         ResultFlags.SPECIFIC | ResultFlags.ROBUST,
+                         Value(mean=np.mean(robust_values), err=1.96*np.std(robust_values)/np.sqrt(len(robust_values))))
 
         return result
