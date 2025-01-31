@@ -155,7 +155,6 @@ class Benchmark:
 
         # Profile defense
         print('[*] Profiling defense')
-        torch.cuda.reset_peak_memory_stats(self.device)
         with profiler:
             robust_model = defense.apply(model)
         result.store('Memory',
@@ -165,7 +164,7 @@ class Benchmark:
                      ResultFlags.AGNOSTIC | ResultFlags.DEFENSE,
                      Value(mean=profiler.runtime, err=0))
 
-        # Profile model inference
+        # Profile standard model inference
         print('[*] Profiling standard model')
         with profiler:
             for x_data, _ in data_loader:
@@ -177,8 +176,8 @@ class Benchmark:
                      ResultFlags.AGNOSTIC | ResultFlags.MODEL | ResultFlags.STANDARD,
                      Value(mean=profiler.runtime, err=0))
 
+        # Profile robust model inference
         print('[*] Profiling robust model')
-        torch.cuda.reset_peak_memory_stats(self.device)
         with profiler:
             for x_data, _ in data_loader:
                 robust_model(x_data.to(self.device))
