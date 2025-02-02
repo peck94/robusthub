@@ -74,6 +74,22 @@ def get_summaries(benchmarks: List[Benchmark]) -> Figure:
                     name=metric
                 )
             )
+
+            lower, upper = data['bounds']
+            if np.isfinite(lower) and np.isfinite(upper):
+                zs = np.linspace(lower, upper)
+                fig.add_trace(
+                    go.Scatter(
+                        x=zs,
+                        y=zs,
+                        name='identity',
+                        line=dict(
+                            dash='dot',
+                            color='gray',
+                            width=1
+                        )
+                    )
+                )
             fig.update_xaxes(range=data['bounds'], title='Standard', row=i+1, col=1)
             fig.update_yaxes(range=data['bounds'], title='Robust', row=i+1, col=1)
         return fig
