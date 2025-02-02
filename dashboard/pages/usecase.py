@@ -1,9 +1,11 @@
 import dash
-from dash import html, dcc
+from dash import html, dcc, dash_table
 
 import dash_bootstrap_components as dbc
 
 import numpy as np
+
+import pandas as pd
 
 import plotly.graph_objects as go
 from plotly.graph_objs._figure import Figure
@@ -25,7 +27,7 @@ adapter = Adapter(c.data['database'])
 
 dash.register_page(__name__, path_template="/usecase/<usecase_id>")
 
-def get_summaries(benchmarks: List[Benchmark]) -> Figure:
+def get_scatterplots(benchmarks: List[Benchmark]) -> Figure:
     if benchmarks:
         plots = {}
         for b in benchmarks:
@@ -102,28 +104,32 @@ def layout(usecase_id=0, **kwargs):
         with open(f'usecases/{usecase.full_description}', 'r') as f:
             description = dcc.Markdown(f.read(), mathjax=True)
 
-        summaries = get_summaries(usecase.benchmarks)
+        scatterplots = get_scatterplots(usecase.benchmarks)
 
-        benchmark_list = benchmark_list = dbc.Table([
-            html.Thead(html.Tr([
-                html.Th('Dataset'),
-                html.Th('Model'),
-                html.Th('Threat model'),
-                html.Th('Defense'),
-                html.Th('Attack'),
-                html.Th('Results'),
-                html.Th('Actions')
-            ]))] + [html.Tr([
-                html.Td(b.dataset.title),
-                html.Td(b.model.title),
-                html.Td(b.threat_model),
-                html.Td(b.defense.title),
-                html.Td(b.attack.title),
-                html.Td(print_results(b.results)),
-                html.Td(dcc.Link('View', href=f'/benchmark/{b.id}'))
-            ], className='benchmarks_row')
-            for b in usecase.benchmarks
-        ])
+        records = [
+            {
+                'Data set': benchmark.dataset.title,
+                'Model': benchmark.model.title,
+                'Threat model': benchmark.threat_model,
+                'Defense': benchmark.defense.title,
+                'Attack': benchmark.attack.title,
+                **print_results(benchmark.results)
+            }
+            for benchmark in usecase.benchmarks
+        ]
+        benchmark_table = dash_table.DataTable(
+            records,
+            #filter_action="native",
+            sort_action="native",
+            sort_mode='multi',
+            selected_rows=[],
+            page_action='native',
+            page_size=20,
+            style_data={
+                'whiteSpace': 'normal',
+                'height': 'auto'
+            }
+        )
 
         return html.Div([
             dbc.Row(
@@ -140,16 +146,13 @@ def layout(usecase_id=0, **kwargs):
                 dbc.Col(html.H2('Benchmarks'))
             ),
             dbc.Row(
-                dbc.Col(benchmark_list)
-            ),
-            dbc.Row(
-                dbc.Col(html.H2('Summaries'))
-            ),
-            dbc.Row(
                 dbc.Col(
-                    dcc.Graph(id='summaries', figure=summaries)
+                    dcc.Graph(id='scatterplots', figure=scatterplots)
                 )
-            )
+            ),
+            dbc.Row(
+                dbc.Col(benchmark_table)
+            ),
         ])
     else:
         return html.Div()
