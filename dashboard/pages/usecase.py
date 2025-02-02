@@ -5,9 +5,8 @@ import dash_bootstrap_components as dbc
 
 import numpy as np
 
-import pandas as pd
-
 import plotly.graph_objects as go
+import plotly.express as px
 from plotly.graph_objs._figure import Figure
 from plotly.subplots import make_subplots
 
@@ -42,7 +41,8 @@ def get_scatterplots(benchmarks: List[Benchmark]) -> Figure:
                         'robust_err': [],
                         'bounds': values['bounds'],
                         'models': [],
-                        'defenses': []
+                        'defenses': [],
+                        'datasets': []
                     }
 
                 plots[metric]['standard'].append(float(values['standard']['mean']))
@@ -51,6 +51,7 @@ def get_scatterplots(benchmarks: List[Benchmark]) -> Figure:
                 plots[metric]['robust_err'].append(float(values['robust']['err']))
                 plots[metric]['models'].append(b.model.title)
                 plots[metric]['defenses'].append(b.defense.title)
+                plots[metric]['datasets'].append(b.dataset)
 
         fig = make_subplots(rows=len(plots), cols=1, subplot_titles=sorted(plots.keys()))
         for i, metric in enumerate(sorted(plots.keys())):
@@ -59,7 +60,7 @@ def get_scatterplots(benchmarks: List[Benchmark]) -> Figure:
                 go.Scatter(
                     x=data['standard'],
                     y=data['robust'],
-                    customdata=np.stack((data['models'], data['defenses']), axis=-1),
+                    customdata=np.stack((data['models'], data['defenses'], [d.title for d in data['datasets']]), axis=-1),
                     error_x=dict(
                         type='data',
                         array=data['standard_err'],
@@ -71,7 +72,8 @@ def get_scatterplots(benchmarks: List[Benchmark]) -> Figure:
                         visible=True
                     ),
                     mode='markers',
-                    hovertemplate='<b>Standard:</b> %{x:.2f}<br><b>Robust:</b> %{y:.2f}<br><b>Model:</b> %{customdata[0]}<br><b>Defense:</b> %{customdata[1]}',
+                    marker_color=[px.colors.qualitative.Plotly[d.id] for d in data['datasets']],
+                    hovertemplate='<b>%{customdata[2]}</b><br><b>Standard:</b> %{x:.2f}<br><b>Robust:</b> %{y:.2f}<br><b>Model:</b> %{customdata[0]}<br><b>Defense:</b> %{customdata[1]}',
                     showlegend=False,
                     name=metric
                 )
@@ -84,12 +86,12 @@ def get_scatterplots(benchmarks: List[Benchmark]) -> Figure:
                     go.Scatter(
                         x=zs,
                         y=zs,
-                        name='identity',
                         line=dict(
                             dash='dot',
                             color='gray',
                             width=1
-                        )
+                        ),
+                        showlegend=False
                     )
                 )
             fig.update_xaxes(range=data['bounds'], title='Standard', row=i+1, col=1)
