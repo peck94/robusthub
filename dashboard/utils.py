@@ -23,7 +23,7 @@ def print_results(results_str: str) -> dict:
 
     records = {
         'Memory': f'{humanize.naturalsize(baseline_mem)} / {humanize.naturalsize(defense_mem)} / {humanize.naturalsize(robust_mem)}',
-        'Runtime': f'{defense_time:.2f} / {robust_time:.2f}'
+        'Runtime': f'{defense_time:.2%} / {robust_time:.2%}'
     }
     for metric in results['metrics']:
         records[metric] = f"{float(results['metrics'][metric]['standard']['mean']):.2f} / {float(results['metrics'][metric]['robust']['mean']):.2f}"

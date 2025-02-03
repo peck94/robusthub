@@ -5,6 +5,8 @@ import dash_bootstrap_components as dbc
 
 import numpy as np
 
+from scipy.spatial import ConvexHull
+
 import plotly.graph_objects as go
 import plotly.express as px
 from plotly.graph_objs._figure import Figure
@@ -29,6 +31,7 @@ dash.register_page(__name__, path_template="/usecase/<usecase_id>")
 def get_scatterplots(benchmarks: List[Benchmark]) -> Figure:
     if benchmarks:
         plots = {}
+        qhulls = {}
         for b in benchmarks:
             results = interpret_results(b)
             for metric in results['metrics']:
@@ -42,7 +45,8 @@ def get_scatterplots(benchmarks: List[Benchmark]) -> Figure:
                         'bounds': values['bounds'],
                         'models': [],
                         'defenses': [],
-                        'datasets': []
+                        'datasets': [],
+                        'attacks': []
                     }
 
                 plots[metric]['standard'].append(float(values['standard']['mean']))
@@ -52,15 +56,33 @@ def get_scatterplots(benchmarks: List[Benchmark]) -> Figure:
                 plots[metric]['models'].append(b.model.title)
                 plots[metric]['defenses'].append(b.defense.title)
                 plots[metric]['datasets'].append(b.dataset)
+                plots[metric]['attacks'].append(b.attack.title)
 
         fig = make_subplots(rows=len(plots), cols=1, subplot_titles=sorted(plots.keys()))
         for i, metric in enumerate(sorted(plots.keys())):
             data = plots[metric]
+
+            for dataset in set(data['datasets']):
+                for defense in set(data['defenses']):
+                    xs = [x for i, x in enumerate(data['standard']) if data['defenses'][i] == defense and data['datasets'][i].id == dataset.id]
+                    ys = [y for i, y in enumerate(data['robust']) if data['defenses'][i] == defense and data['datasets'][i].id == dataset.id]
+                    points = np.stack([np.array(xs), np.array(ys)], axis=1)
+                    qhull = ConvexHull(points)
+
+                    fig.add_trace(
+                        go.Scatter(
+                            x=np.concatenate((points[qhull.vertices, 0], np.array([points[qhull.vertices[0], 0]]))),
+                            y=np.concatenate((points[qhull.vertices, 1], np.array([points[qhull.vertices[0], 1]]))),
+                            name=f'{defense} ({dataset.title})',
+                            marker_color=px.colors.qualitative.Plotly[dataset.id]
+                        )
+                    )
+
             fig.add_trace(
                 go.Scatter(
                     x=data['standard'],
                     y=data['robust'],
-                    customdata=np.stack((data['models'], data['defenses'], [d.title for d in data['datasets']]), axis=-1),
+                    customdata=np.stack((data['models'], data['defenses'], [d.title for d in data['datasets']], data['attacks']), axis=-1),
                     error_x=dict(
                         type='data',
                         array=data['standard_err'],
@@ -73,7 +95,7 @@ def get_scatterplots(benchmarks: List[Benchmark]) -> Figure:
                     ),
                     mode='markers',
                     marker_color=[px.colors.qualitative.Plotly[d.id] for d in data['datasets']],
-                    hovertemplate='<b>%{customdata[2]}</b><br><b>Standard:</b> %{x:.2f}<br><b>Robust:</b> %{y:.2f}<br><b>Model:</b> %{customdata[0]}<br><b>Defense:</b> %{customdata[1]}',
+                    hovertemplate='<b>%{customdata[2]}</b><br><b>Standard:</b> %{x:.2f}<br><b>Robust:</b> %{y:.2f}<br><b>Model:</b> %{customdata[0]}<br><b>Defense:</b> %{customdata[1]}<br><b>Attack:</b> %{customdata[3]}',
                     showlegend=False,
                     name=metric
                 )
