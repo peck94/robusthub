@@ -1,10 +1,13 @@
 import torch
 
-import numpy as np
+import scipy.fftpack as fft
 
 from robusthub.models import Model
 from robusthub.threats import ThreatModel
 from robusthub.attacks.attack import Attack
+
+def idct2(x: torch.Tensor) -> torch.Tensor:
+    return torch.from_numpy(fft.idct(fft.idct(x.cpu().detach().numpy(), axis=0, norm='ortho'), axis=1, norm='ortho')).to(x.device)
 
 class Simba(Attack):
     """
@@ -26,8 +29,8 @@ class Simba(Attack):
     """
     def __init__(self,
                  threat_model: ThreatModel,
-                 iterations: int = 1000,
-                 eps: float = 1,
+                 iterations: int = 500,
+                 eps: float = .1,
                  basis: str = 'standard'):
         super().__init__(threat_model)
 
@@ -38,21 +41,17 @@ class Simba(Attack):
     def apply(self, model: Model, x_data: torch.Tensor, y_data: torch.Tensor) -> torch.Tensor:
         deltas = torch.zeros_like(x_data)
         bs = x_data.shape[0]
+        y_pred_old = model(x_data)
         for _ in range(self.iterations):
-            qs = 2 * self.eps * torch.rand_like(deltas) - self.eps
-            if self.basis == 'standard':
-                x_tilde = x_data + deltas + qs
-            else:
-                x_tilde = torch.fft.ifft2(
-                    torch.fft.fft2(x_data + deltas) + qs
-                ).real
-            x_tilde = self.threat.project(x_data, x_tilde)
-            x_old = self.threat.project(x_data, x_data + deltas)
+            qs = self.eps * torch.randn_like(x_data)
+            if self.basis == 'dct':
+                qs = idct2(qs)
+            x_tilde = self.threat.project(x_data, x_data + deltas + qs)
 
-            y_pred_old = model(x_old)
             y_pred_new = model(x_tilde)
             for i in range(bs):
                 if y_pred_old[i, y_data[i]] > y_pred_new[i, y_data[i]]:
                     deltas[i, ...] = deltas[i, ...] + qs[i, ...]
+            y_pred_old = y_pred_new.clone()
 
         return self.threat.project(x_data, x_data + deltas)
